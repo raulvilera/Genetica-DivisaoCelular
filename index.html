@@ -790,16 +790,15 @@ Responda em português, de forma encorajadora mas precisa. Não use marcadores o
   // ═══════════════════════════════════════════════════
   // FULLSCREEN + ANTI-COLA
   // ═══════════════════════════════════════════════════
+  let entrouFullscreen = false;
+
   function entrarFullscreen() {
+    // Fecha o overlay SEMPRE — não depende do sucesso do fullscreen
+    document.getElementById('overlay-fullscreen').classList.remove('ativo');
+    entrouFullscreen = true;
     const e = document.documentElement;
     const req = e.requestFullscreen || e.webkitRequestFullscreen || e.mozRequestFullScreen || e.msRequestFullscreen;
-    if (req) {
-      req.call(e)
-        .then(() => { document.getElementById('overlay-fullscreen').classList.remove('ativo'); })
-        .catch(() => { document.getElementById('overlay-fullscreen').classList.remove('ativo'); });
-    } else {
-      document.getElementById('overlay-fullscreen').classList.remove('ativo');
-    }
+    if (req) { try { req.call(e); } catch(err) {} }
   }
 
   function registrarSaida(motivo) {
@@ -818,25 +817,33 @@ Responda em português, de forma encorajadora mas precisa. Não use marcadores o
   }
 
   function configurarAntiCola() {
-    // Saída de visibilidade (troca de aba)
+    // Troca de aba / minimizar
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden && !submetido) registrarSaida('visibilidade');
+      if (document.hidden && !submetido && entrouFullscreen) registrarSaida('visibilidade');
     });
-    // Saída de foco da janela
+    // Perda de foco — aguarda para não disparar ao clicar no botão de fullscreen
     window.addEventListener('blur', () => {
-      if (!submetido) registrarSaida('foco');
+      if (!submetido && entrouFullscreen) {
+        setTimeout(() => {
+          if (!document.hidden) registrarSaida('foco');
+        }, 500);
+      }
     });
-    // Fullscreen abandonado
+    // Saiu do fullscreen após ter entrado
     document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement && !submetido) registrarSaida('fullscreen');
+      if (!document.fullscreenElement && entrouFullscreen && !submetido) {
+        registrarSaida('fullscreen');
+      }
     });
     document.addEventListener('webkitfullscreenchange', () => {
-      if (!document.webkitFullscreenElement && !submetido) registrarSaida('fullscreen');
+      if (!document.webkitFullscreenElement && entrouFullscreen && !submetido) {
+        registrarSaida('fullscreen');
+      }
     });
-    // Bloquear copiar/colar/recortar
+    // Bloquear copiar/recortar
     document.addEventListener('copy', e => e.preventDefault());
     document.addEventListener('cut', e => e.preventDefault());
-    // Bloquear F12, Ctrl+Shift+I, Ctrl+U
+    // Bloquear DevTools
     document.addEventListener('keydown', e => {
       if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || (e.ctrlKey && e.key === 'u')) {
         e.preventDefault();
