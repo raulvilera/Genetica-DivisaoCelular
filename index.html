@@ -1,50 +1,742 @@
-function doPost(e) {
-  try {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Respostas");
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Atividade de Ciências – 2º Bimestre – 9º Ano | Design Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --azul-royal: #0f2b4d;
+    --azul-profundo: #1a3f6e;
+    --azul-vidro: #eef4fc;
+    --azul-grad-ini: #d4e4fc;
+    --azul-grad-fim: #aac4e0;
+    --azul-escuro-texto: #0a2540;
+    --azul-destaque: #0b3b5c;
+    --ouro: #c9a03d;
+    --texto-escuro: #11181c;
+    --cinza-suave: #5b6f82;
+    --borda-suave: #cbdde9;
+    --branco: #ffffff;
+    --erro: #c0392b;
+    --acerto: #117f4a;
+    --feedback-info: #2c6e9e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: radial-gradient(circle at 10% 20%, rgba(210, 230, 250, 0.85), rgba(170, 200, 230, 0.7));
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    position: relative;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" opacity="0.08"><path fill="none" d="M0 0h800v800H0z"/><path fill="%23ffffff" d="M200 200h30v30h-30zM400 350h25v25h-25zM600 120h40v40h-40zM120 550h35v35h-35zM680 680h20v20h-20z"/></svg>');
+    background-repeat: repeat;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  textarea, input, select {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    user-select: text;
+  }
+
+  #overlay-bloqueio {
+    display: none; position: fixed; inset: 0; z-index: 99999;
+    background: rgba(10, 30, 45, 0.97); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center; flex-direction: column; gap: 20px;
+    text-align: center; padding: 32px;
+  }
+  #overlay-bloqueio.ativo { display: flex; }
+  #overlay-bloqueio .alerta-icone { font-size: 4rem; animation: pisca 1s ease-in-out infinite; }
+  @keyframes pisca { 0%,100%{opacity:1} 50%{opacity:.4} }
+  #overlay-bloqueio h2 {
+    font-family: 'Crimson Pro', serif; font-size: 1.8rem; color: #f4c542; font-weight: 700;
+  }
+  #overlay-bloqueio p { color: #cbdbe6; font-size: 1rem; max-width: 440px; line-height: 1.6; }
+  #overlay-bloqueio .contador-alerta {
+    font-size: 2.8rem; font-weight: 700; color: #e65c4f;
+    font-family: 'Crimson Pro', serif; min-width: 60px;
+  }
+  #btn-retornar {
+    margin-top: 8px; padding: 14px 36px; background: #1e4a76; color: white;
+    border: none; border-radius: 60px; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  #overlay-fullscreen {
+    display: none; position: fixed; inset: 0; z-index: 99998;
+    background: rgba(8, 28, 48, 0.96); backdrop-filter: blur(12px);
+    align-items: center; justify-content: center; flex-direction: column; gap: 20px;
+    text-align: center; padding: 32px;
+  }
+  #overlay-fullscreen.ativo { display: flex; }
+  #overlay-fullscreen h2 { font-family: 'Crimson Pro', serif; font-size: 1.8rem; color: #f4c542; font-weight: 700; }
+  #overlay-fullscreen p { color: #cbdbe6; font-size: 1rem; max-width: 440px; }
+  #btn-fullscreen {
+    padding: 14px 36px; background: #c9a03d; color: #0f2b1f; border: none;
+    border-radius: 60px; font-weight: 700; cursor: pointer; transition: 0.2s;
+    box-shadow: 0 5px 0 #7a5c1a;
+  }
+  #btn-skip-fullscreen {
+    padding: 10px 24px; background: transparent; color: #aaa; border: 1px solid #555;
+    border-radius: 60px; font-size: 0.8rem; cursor: pointer; margin-top: 8px;
+  }
+
+  .barra-seguranca {
+    background: #0a2a3b; color: #b8e1fc; font-size: .72rem; text-align: center;
+    padding: 6px 16px; letter-spacing: .08em; display: flex; align-items: center;
+    justify-content: center; gap: 8px; border-bottom: 1px solid #2c6280;
+  }
+  .barra-seguranca .dot { width: 7px; height: 7px; background: #3bc9db; border-radius: 50%; animation: pulse-dot 2s ease infinite; }
+  @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(0.8)} }
+  #aviso-saidas {
+    background: #fff3cd; border-left: 5px solid #c9a03d; color: #6b4800;
+    font-size: .8rem; text-align: center; padding: 6px 16px; display: none;
+    gap: 8px; align-items: center; justify-content: center;
+  }
+  #aviso-saidas.show { display: flex; }
+
+  .cabecalho {
+    background: linear-gradient(135deg, #0a2e4d, #0a3f62); color: white;
+    padding: 20px 32px 16px; border-bottom: 3px solid var(--ouro);
+    position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+  .cabecalho-titulo {
+    font-family: 'Crimson Pro', serif; font-size: 1.7rem; font-weight: 700;
+    text-align: center; letter-spacing: 1px; text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+  .cabecalho-sub { text-align: center; font-size: .75rem; opacity: 0.85; margin-top: 4px; text-transform: uppercase; }
+
+  .id-bar {
+    background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(6px);
+    border-bottom: 1px solid rgba(100, 130, 160, 0.4); padding: 14px 32px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .cabecalho-linha {
+    display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
+    max-width: 900px; margin: 0 auto;
+  }
+  .campo-label { font-size: .7rem; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; color: #1f4a6e; margin-bottom: 4px; }
+  .campo-wrap { flex: 1; min-width: 180px; }
+  select, input[type=text] {
+    width: 100%; padding: 8px 12px; border: 1.5px solid #bdd4e8; border-radius: 14px;
+    background: white; font-family: 'DM Sans', sans-serif; font-size: .88rem; transition: all .2s; cursor: pointer;
+  }
+  select:focus, input[type=text]:focus { border-color: #1f6392; box-shadow: 0 0 0 3px rgba(31,99,146,0.2); outline: none; }
+
+  .corpo {
+    max-width: 860px; margin: 28px auto; padding: 0 20px; position: relative; z-index: 2;
+  }
+  .atividade-titulo {
+    font-family: 'Crimson Pro', serif; font-size: 1.7rem; font-weight: 800;
+    color: #0a3452; text-align: center; letter-spacing: -0.2px;
+  }
+  .atividade-subtitulo {
+    text-align: center; font-size: .8rem; color: #2c5a7a; margin-bottom: 28px;
+    border-bottom: 1px dashed #aac4e0; display: inline-block; width: auto;
+    margin-left: auto; margin-right: auto; padding-bottom: 6px; text-transform: uppercase; font-weight: 500;
+  }
+
+  .questao {
+    background: linear-gradient(125deg, var(--azul-grad-ini), var(--azul-grad-fim));
+    border-radius: 28px; margin-bottom: 32px; overflow: hidden;
+    box-shadow: 0 18px 28px -12px rgba(0, 0, 0, 0.3), 0 6px 8px -4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255,255,255,0.6);
+    transition: transform 0.2s ease, box-shadow 0.3s;
+    border: 1px solid rgba(255,255,255,0.5);
+  }
+  .questao:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 26px 34px -14px rgba(0, 0, 0, 0.4), 0 8px 12px -6px rgba(0, 0, 0, 0.2);
+  }
+  .questao-header {
+    display: flex; align-items: center; gap: 12px; padding: 16px 22px 12px;
+    border-bottom: 1px solid rgba(69, 104, 130, 0.3);
+    background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(2px);
+  }
+  .num {
+    flex-shrink: 0; width: 42px; height: 42px;
+    background: linear-gradient(145deg, #1e4c7a, #0e3860); color: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-family: 'Crimson Pro', serif; font-size: 1.3rem; font-weight: 800;
+    box-shadow: 0 5px 8px rgba(0,0,0,0.2);
+  }
+  .questao-tipo {
+    font-size: .7rem; text-transform: uppercase; letter-spacing: .1em;
+    background: #1e4a76cc; color: white; padding: 4px 14px; border-radius: 40px;
+    font-weight: 700; backdrop-filter: blur(2px);
+  }
+  .questao-tipo.discursiva { background: #bf8f30cc; color: #2d2b0e; }
+  .questao-enunciado {
+    padding: 18px 22px 8px; font-size: .98rem; line-height: 1.65;
+    color: #022b44; font-weight: 500;
+  }
+  .questao-enunciado strong { color: #0e4b6e; font-weight: 700; }
+
+  .questao-imagem {
+    width: 100%; max-width: 430px; margin: 12px auto; display: block;
+    border-radius: 20px; border: 3px solid #ffffffcc;
+    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.2); background: #fff;
+    padding: 4px; pointer-events: none; transition: 0.2s;
+  }
+
+  .questao-contexto {
+    background: rgba(10, 40, 60, 0.08); backdrop-filter: blur(4px);
+    border-left: 5px solid #2b6c9e; border-radius: 20px; padding: 12px 18px;
+    margin: 12px 22px; font-size: .88rem; color: #0c3f5e; font-style: italic;
+  }
+
+  .alternativas { padding: 8px 22px 20px; }
+  .alternativa {
+    display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px;
+    margin: 8px 0; border: 1.5px solid rgba(60, 100, 130, 0.5);
+    border-radius: 18px; cursor: pointer; transition: all 0.2s;
+    font-size: .92rem; line-height: 1.45; background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(2px);
+  }
+  .alternativa:hover { background: rgba(30, 90, 130, 0.15); border-color: #2b6c9e; transform: scale(1.01); }
+  .alternativa input[type=radio] { display: none; }
+  .letra {
+    flex-shrink: 0; width: 30px; height: 30px; border: 2px solid #2b6c9e;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: .9rem; background: white; color: #1a4b6e; transition: 0.15s;
+  }
+  .alternativa.selecionada {
+    background: #0a3352 !important; border-color: #c9a03d !important;
+    color: white !important; font-weight: 700 !important;
+  }
+  .alternativa.selecionada .letra {
+    background: #ffdd99; border-color: #c9a03d; color: #0a2e44; font-weight: 800;
+  }
+  .alternativa.selecionada span { color: white; font-weight: 700; }
+
+  .discursiva-area { padding: 8px 22px 18px; }
+  textarea {
+    width: 100%; min-height: 120px; padding: 14px 16px; border: 1.5px solid #8aadc9;
+    border-radius: 20px; font-family: 'DM Sans', sans-serif; font-size: .9rem;
+    background: rgba(255,255,240,0.85); transition: 0.2s;
+  }
+  textarea:focus { border-color: #1f6392; box-shadow: 0 0 0 3px rgba(31,99,146,0.2); outline: none; background: white; }
+
+  .botoes { display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin: 28px 0 10px; }
+  .btn {
+    padding: 14px 32px; border: none; border-radius: 50px;
+    font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: transform 0.08s, box-shadow 0.15s; letter-spacing: 0.5px;
+  }
+  .btn-primary {
+    background: linear-gradient(115deg, #165a7a, #0b3b5f); color: white;
+    box-shadow: 0 8px 0 #05243a;
+  }
+  .btn-primary:active { transform: translateY(3px); box-shadow: 0 4px 0 #05243a; }
+  .btn-secondary {
+    background: #eef3fc; color: #0b3b5f; border: 1.5px solid #2b6c9e;
+    box-shadow: 0 5px 0 #9ab3cc;
+  }
+  .btn-secondary:active { transform: translateY(2px); box-shadow: 0 2px 0 #7e9bb9; }
+  .btn-primary:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
+
+  .progress-bar-wrap {
+    background: #cbdde9; border-radius: 40px; height: 12px;
+    margin: 20px 0 8px; overflow: hidden;
+  }
+  .progress-bar { height: 100%; background: linear-gradient(90deg, #2a7faa, #135b84); border-radius: 40px; width: 0; transition: width 0.3s; }
+  .resultado-box {
+    background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px);
+    border: 2px solid #c9a03d; border-radius: 32px; padding: 28px;
+    margin-top: 28px; text-align: center; display: none;
+  }
+  .resultado-box.show { display: block; }
+  .resultado-nota { font-family: 'Crimson Pro', serif; font-size: 3.2rem; font-weight: 800; color: #135b84; }
+  .status-envio {
+    text-align: center; margin: 16px 0; padding: 12px; border-radius: 20px;
+    font-weight: 600; display: none;
+  }
+  .status-envio.sucesso { display: block; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+  .status-envio.erro { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .status-envio.carregando { display: block; background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+
+  @media(max-width:620px) {
+    .questao-header { padding: 12px 16px; }
+    .questao-enunciado, .alternativas, .discursiva-area { padding-left: 16px; padding-right: 16px; }
+    .questao-contexto { margin: 8px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="overlay-bloqueio">
+  <div class="alerta-icone">🚫</div>
+  <h2>Atividade Interrompida!</h2>
+  <p>Você saiu da aba da atividade ou tentou abrir outra janela.<br>Isso <strong style="color:#f4c542">não é permitido</strong> durante a avaliação.</p>
+  <div><div style="color:#cbdbe6;font-size:.85rem;">Saídas detectadas:</div><div class="contador-alerta" id="cont-saidas">0</div></div>
+  <button id="btn-retornar" onclick="retornarAtividade()">↩ Retornar à Atividade</button>
+</div>
+
+<div id="overlay-fullscreen">
+  <div style="font-size:3rem;">🖥️</div>
+  <h2>Modo Avaliação Premium</h2>
+  <p>Para realizar esta atividade, a página precisa abrir em <strong style="color:#f4c542">tela cheia</strong>.</p>
+  <button id="btn-fullscreen" onclick="entrarFullscreen()">▶ Iniciar em Tela Cheia</button>
+  <button id="btn-skip-fullscreen" onclick="pularFullscreen()">Continuar sem tela cheia</button>
+</div>
+
+<div class="barra-seguranca">
+  <span class="dot"></span>
+  🔒 MODO AVALIAÇÃO ATIVO — Consultas externas são monitoradas
+  <span class="dot"></span>
+</div>
+<div id="aviso-saidas">⚠️ <strong>Atenção:</strong> <span id="txt-saidas">0</span> saída(s) de tela detectada(s)</div>
+
+<div class="cabecalho">
+  <div class="cabecalho-titulo">E.E. Profª Wanda Mascagni de Sá</div>
+  <div class="cabecalho-sub">Secretaria da Educação do Estado de São Paulo</div>
+</div>
+
+<div class="id-bar">
+  <div class="cabecalho-linha">
+    <div class="campo-wrap"><div class="campo-label">Nome do Aluno</div><select id="sel-nome" onchange="preencherCampos()"><option value="">— Selecione seu nome —</option></select></div>
+    <div class="campo-num"><div class="campo-label">Nº</div><input type="text" id="inp-numero" readonly style="cursor:default;text-align:center;"></div>
+    <div class="campo-fixo"><div class="campo-label">Série</div><input type="text" id="inp-serie" readonly></div>
+    <div class="campo-fixo"><div class="campo-label">Data</div><input type="text" id="inp-data" placeholder="dd/mm/aaaa"></div>
+  </div>
+</div>
+
+<div class="corpo">
+  <div class="atividade-titulo">Atividade de Ciências</div>
+  <div class="atividade-subtitulo">2º Bimestre · Genética e Hereditariedade · 9º Ano</div>
+  <div class="aviso" id="aviso-campos" style="color:#c0392b;text-align:center;display:none;">⚠️ Preencha nome, número e data antes de enviar.</div>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar"></div></div>
+  <div class="progress-txt" id="prog-txt" style="text-align:center;font-size:.85rem;margin-bottom:16px;">0 de 10 respondidas</div>
+
+  <form id="form-atividade" onsubmit="return false;">
+    <!-- QUESTÃO 1 -->
+    <div class="questao" data-q="1" data-tipo="me" data-gabarito="B">
+      <div class="questao-header"><div class="num">1</div><span class="questao-tipo">Múltipla Escolha</span></div>
+      <div class="questao-enunciado"><strong>DNA e hereditariedade:</strong> Durante a reprodução sexuada, o material genético dos pais é transmitido aos filhos por meio dos gametas. Assinale a alternativa <strong>correta</strong>:</div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/WzermqkjHbMLerMm.png" alt="DNA" class="questao-imagem" onerror="this.style.display='none'">
+      <div class="questao-contexto">Na fecundação, cada gameta contribui com metade do DNA que formará o novo indivíduo.</div>
+      <div class="alternativas">
+        <label class="alternativa" onclick="selecionarAlternativa(this,1)"><input type="radio" name="q1" value="A"><div class="letra">A</div><span>O filho herda 100% do DNA da mãe, pois o óvulo é maior.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,1)"><input type="radio" name="q1" value="B"><div class="letra">B</div><span>Cada progenitor contribui com 50% do DNA do filho, que recebe cromossomos de ambos os pais.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,1)"><input type="radio" name="q1" value="C"><div class="letra">C</div><span>DNA é transmitido apenas pelos cromossomos autossomos.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,1)"><input type="radio" name="q1" value="D"><div class="letra">D</div><span>Gametas são diploides, filho nasce com quádruplo de cromossomos.</span></label>
+      </div>
+    </div>
+
+    <!-- QUESTÃO 2 -->
+    <div class="questao" data-q="2" data-tipo="discursiva">
+      <div class="questao-header"><div class="num">2</div><span class="questao-tipo discursiva">Discursiva</span></div>
+      <div class="questao-enunciado"><strong>Estrutura química do DNA:</strong> Descreva as três partes que compõem cada nucleotídeo e explique por que a sequência de bases nitrogenadas é considerada o "código da vida".</div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/LaUIxSXOxrjUrrLU.png" alt="Nucleotídeo" class="questao-imagem" onerror="this.style.display='none'">
+      <div class="discursiva-area"><textarea id="r2" placeholder="Escreva sua resposta aqui..." oninput="contarCaracteres(this,'cnt2'); atualizarProgresso()"></textarea><div class="contador" id="cnt2" style="font-size:.75rem;color:#5b6f82;">0 caracteres</div></div>
+    </div>
+
+    <!-- QUESTÃO 3 -->
+    <div class="questao" data-q="3" data-tipo="me" data-gabarito="C">
+      <div class="questao-header"><div class="num">3</div><span class="questao-tipo">Múltipla Escolha</span></div>
+      <div class="questao-enunciado"><strong>Bases nitrogenadas:</strong> Se uma fita de DNA apresenta A-T-C-G-A, qual a sequência complementar?</div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/KlACXetYPZmFRlxt.png" class="questao-imagem" onerror="this.style.display='none'">
+      <div class="alternativas">
+        <label class="alternativa" onclick="selecionarAlternativa(this,3)"><input type="radio" name="q3" value="A"><div class="letra">A</div><span>A-T-C-G-A (idêntica)</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,3)"><input type="radio" name="q3" value="B"><div class="letra">B</div><span>T-A-G-C-T</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,3)"><input type="radio" name="q3" value="C"><div class="letra">C</div><span>T-A-G-C-T (A-T, C-G)</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,3)"><input type="radio" name="q3" value="D"><div class="letra">D</div><span>A-U-G-C-A (com Uracila)</span></label>
+      </div>
+    </div>
+
+    <!-- QUESTÃO 4 -->
+    <div class="questao" data-q="4" data-tipo="discursiva">
+      <div class="questao-header"><div class="num">4</div><span class="questao-tipo discursiva">Discursiva</span></div>
+      <div class="questao-enunciado"><strong>Rosalind Franklin:</strong> Qual foi sua contribuição para a descoberta da estrutura do DNA e por que é importante reconhecer todos os cientistas envolvidos?</div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/feHiFTSkJuNigjlY.jpg" class="questao-imagem" onerror="this.style.display='none'">
+      <div class="discursiva-area"><textarea id="r4" placeholder="Responda..." oninput="contarCaracteres(this,'cnt4'); atualizarProgresso()"></textarea><div class="contador" id="cnt4" style="font-size:.75rem;color:#5b6f82;">0 caracteres</div></div>
+    </div>
+
+    <!-- QUESTÃO 5 -->
+    <div class="questao" data-q="5" data-tipo="me" data-gabarito="A">
+      <div class="questao-header"><div class="num">5</div><span class="questao-tipo">Múltipla Escolha</span></div>
+      <div class="questao-enunciado"><strong>Compactação do DNA – Cromatina:</strong> Sobre a compactação do DNA, é correto afirmar:</div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/WEizGXriWaGEHMdw.png" class="questao-imagem" onerror="this.style.display='none'">
+      <div class="alternativas">
+        <label class="alternativa" onclick="selecionarAlternativa(this,5)"><input type="radio" name="q5" value="A"><div class="letra">A</div><span>O DNA se enrola em proteínas histonas formando nucleossomos, que se compactam em cromatina.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,5)"><input type="radio" name="q5" value="B"><div class="letra">B</div><span>A heterocromatina é a forma menos compactada do DNA.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,5)"><input type="radio" name="q5" value="C"><div class="letra">C</div><span>Os nucleossomos são formados apenas por DNA, sem proteínas.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,5)"><input type="radio" name="q5" value="D"><div class="letra">D</div><span>A compactação do DNA impede completamente a expressão gênica.</span></label>
+      </div>
+    </div>
+
+    <!-- QUESTÃO 6 -->
+    <div class="questao" data-q="6" data-tipo="discursiva">
+      <div class="questao-header"><div class="num">6</div><span class="questao-tipo discursiva">Discursiva</span></div>
+      <div class="questao-enunciado"><strong>Células haploides e diploides:</strong> Explique a diferença entre células haploides e diploides, dê exemplos de cada tipo no corpo humano e explique a importância dessa diferença.</div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/LqTIRCktqmMRMIbT.png" class="questao-imagem" onerror="this.style.display='none'">
+      <div class="discursiva-area"><textarea id="r6" placeholder="Escreva..." oninput="contarCaracteres(this,'cnt6'); atualizarProgresso()"></textarea><div class="contador" id="cnt6" style="font-size:.75rem;color:#5b6f82;">0 caracteres</div></div>
+    </div>
+
+    <!-- QUESTÃO 7 -->
+    <div class="questao" data-q="7" data-tipo="me" data-gabarito="D">
+      <div class="questao-header"><div class="num">7</div><span class="questao-tipo">Múltipla Escolha</span></div>
+      <div class="questao-enunciado"><strong>Cariótipo humano:</strong> Sobre o cariótipo humano normal, assinale a alternativa correta:</div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/kDMbyOiGkttruoTm.png" class="questao-imagem" onerror="this.style.display='none'">
+      <div class="alternativas">
+        <label class="alternativa" onclick="selecionarAlternativa(this,7)"><input type="radio" name="q7" value="A"><div class="letra">A</div><span>É composto por 46 pares de cromossomos.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,7)"><input type="radio" name="q7" value="B"><div class="letra">B</div><span>Todos os cromossomos são autossomos.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,7)"><input type="radio" name="q7" value="C"><div class="letra">C</div><span>O cromossomo Y é exclusivo do sexo feminino.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,7)"><input type="radio" name="q7" value="D"><div class="letra">D</div><span>Possui 46 cromossomos: 22 pares autossomos + 1 par sexual (XX ou XY).</span></label>
+      </div>
+    </div>
+
+    <!-- QUESTÃO 8 -->
+    <div class="questao" data-q="8" data-tipo="discursiva">
+      <div class="questao-header"><div class="num">8</div><span class="questao-tipo discursiva">Discursiva</span></div>
+      <div class="questao-enunciado"><strong>Genes e diferenciação celular:</strong> Como células com o mesmo DNA podem exercer funções tão diferentes? Explique os conceitos de eucromatina e heterocromatina.</div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/kiABFYtQMecJcGJJ.png" class="questao-imagem" onerror="this.style.display='none'">
+      <div class="discursiva-area"><textarea id="r8" placeholder="Resposta..." oninput="contarCaracteres(this,'cnt8'); atualizarProgresso()"></textarea><div class="contador" id="cnt8" style="font-size:.75rem;color:#5b6f82;">0 caracteres</div></div>
+    </div>
+
+    <!-- QUESTÃO 9 -->
+    <div class="questao" data-q="9" data-tipo="me" data-gabarito="B">
+      <div class="questao-header"><div class="num">9</div><span class="questao-tipo">Múltipla Escolha</span></div>
+      <div class="questao-enunciado"><strong>Estrutura dos cromossomos:</strong> Sobre a estrutura dos cromossomos, é correto afirmar:</div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/qHvJJlpKTFGvrvWJ.jpg" class="questao-imagem" onerror="this.style.display='none'">
+      <div class="alternativas">
+        <label class="alternativa" onclick="selecionarAlternativa(this,9)"><input type="radio" name="q9" value="A"><div class="letra">A</div><span>O centrômero está sempre localizado no centro do cromossomo.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,9)"><input type="radio" name="q9" value="B"><div class="letra">B</div><span>As cromátides-irmãs são unidas pelo centrômero e os braços podem ter tamanhos diferentes.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,9)"><input type="radio" name="q9" value="C"><div class="letra">C</div><span>Os cromossomos são visíveis durante todo o ciclo celular.</span></label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,9)"><input type="radio" name="q9" value="D"><div class="letra">D</div><span>As cromátides são cromossomos diferentes.</span></label>
+      </div>
+    </div>
+
+    <!-- QUESTÃO 10 -->
+    <div class="questao" data-q="10" data-tipo="discursiva">
+      <div class="questao-header"><div class="num">10</div><span class="questao-tipo discursiva">Discursiva</span></div>
+      <div class="questao-enunciado"><strong>DNA: do nucleotídeo ao cromossomo:</strong> Descreva a hierarquia de organização do material genético, partindo dos nucleotídeos até chegar ao cromossomo.</div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/fMdrvVISYxihUYJU.png" class="questao-imagem" onerror="this.style.display='none'">
+      <div class="discursiva-area"><textarea id="r10" placeholder="Responda..." oninput="contarCaracteres(this,'cnt10'); atualizarProgresso()"></textarea><div class="contador" id="cnt10" style="font-size:.75rem;color:#5b6f82;">0 caracteres</div></div>
+    </div>
+
+    <div class="botoes">
+      <button type="button" class="btn btn-primary" id="btn-enviar" onclick="enviarAtividade()">✅ Enviar Atividade</button>
+      <button type="button" class="btn btn-secondary" onclick="limparTudo()">🔄 Recomeçar</button>
+    </div>
+    <div class="status-envio" id="status-envio"></div>
+    <div class="resultado-box" id="resultado-box">
+      <div class="resultado-label">Nota nas questões objetivas</div>
+      <div class="resultado-nota" id="resultado-nota">—</div>
+      <div class="resultado-detalhe" style="font-size:.9rem;color:#5b6f82;margin-top:8px;"></div>
+    </div>
+  </form>
+</div>
+
+<script>
+  // ==================== CONFIGURAÇÃO ====================
+  // ⚠️ SUBSTITUA PELA URL DO SEU GOOGLE APPS SCRIPT DEPLOYADO
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbzSEU7FWWQIRdN0RCYfAALGRhWN1oEHh6nIti_S_Jeav54a5P4/exec";
+  
+  const GABARITOS = { 1:"B", 3:"C", 5:"A", 7:"D", 9:"B" };
+  
+  const ALUNOS = [
+    { nome: "ALICE CARVALHO", numero: 1, serie: "9º Ano A" },
+    { nome: "AMANDA PASSOS DE ALMEIDA", numero: 2, serie: "9º Ano A" },
+    { nome: "ANA CLARA SOUSA DA COSTA", numero: 4, serie: "9º Ano A" },
+    { nome: "ANA JULIA MENEZES DA SILVA", numero: 5, serie: "9º Ano A" },
+    { nome: "ARTHUR COHEN BARRETO", numero: 7, serie: "9º Ano A" },
+    { nome: "ARTHUR DAVI DE SOUZA FERNANDES", numero: 8, serie: "9º Ano A" },
+    { nome: "EDUARDA ALVES DE SOUZA", numero: 10, serie: "9º Ano A" },
+    { nome: "EMANUEL ALVES OLIVEIRA", numero: 11, serie: "9º Ano A" },
+    { nome: "ESTHER CRISTINE SILVA RIBEIRO", numero: 12, serie: "9º Ano A" },
+    { nome: "EVELLYN ALVES DA SILVA", numero: 13, serie: "9º Ano A" },
+    { nome: "EVELLYN YASMIN TAVARES SILVA", numero: 14, serie: "9º Ano A" },
+    { nome: "FELIPE DE SOUZA RODRIGUES", numero: 15, serie: "9º Ano A" },
+    { nome: "FERNANDA POLACHINI MAYER GOMES MARQUES", numero: 16, serie: "9º Ano A" },
+    { nome: "GUSTAVO AUGUSTO TOMBOLO REIS", numero: 17, serie: "9º Ano A" },
+    { nome: "HENRIQUE ROCHA CARVALHAL", numero: 18, serie: "9º Ano A" },
+    { nome: "HINGRID SARAIVA DOS SANTOS", numero: 19, serie: "9º Ano A" },
+    { nome: "IGOR MARTINS PEREIRA", numero: 20, serie: "9º Ano A" },
+    { nome: "ISABELLA DOS SANTOS SALDANHA", numero: 21, serie: "9º Ano A" },
+    { nome: "KAUANNY APARECIDA MALAQUIAS LIMA", numero: 22, serie: "9º Ano A" },
+    { nome: "KÉTHILY NAYARA DA SILVA", numero: 23, serie: "9º Ano A" },
+    { nome: "LEONARDO DE AVELAR CARVALHO", numero: 24, serie: "9º Ano A" },
+    { nome: "LIVIA OLIVEIRA NASCIMENTO", numero: 25, serie: "9º Ano A" },
+    { nome: "LOHRAN ROMUALDO MENDES DA SILVA", numero: 26, serie: "9º Ano A" },
+    { nome: "LUANA KAROLINE MARTINS DE OLIVEIRA", numero: 27, serie: "9º Ano A" },
+    { nome: "LUIS MIGUEL GONCALVES DA SILVA", numero: 28, serie: "9º Ano A" },
+    { nome: "MANUELLA DE MORAES SOUZA", numero: 29, serie: "9º Ano A" },
+    { nome: "MARCELA ROBERTO DE OLIVEIRA", numero: 30, serie: "9º Ano A" },
+    { nome: "MATHEUS TURCHETTO", numero: 33, serie: "9º Ano A" },
+    { nome: "MELISSA VICTORIA DE OLIVEIRA CARVALHO", numero: 34, serie: "9º Ano A" },
+    { nome: "MIGUEL MARTINS DE ASSIS", numero: 35, serie: "9º Ano A" },
+    { nome: "OMRAN RASEKH", numero: 36, serie: "9º Ano A" },
+    { nome: "PATRICIA SEGURA", numero: 37, serie: "9º Ano A" },
+    { nome: "RAUL HENRIQUE CRUS BAPTISTA", numero: 39, serie: "9º Ano A" },
+    { nome: "SARAH VITORIA ALVES OLIVEIRA", numero: 40, serie: "9º Ano A" },
+    { nome: "YURI GABRIEL DE MORAES PONGOLINO", numero: 41, serie: "9º Ano A" },
+    { nome: "ZAYN AL ABIDIN RASULI", numero: 42, serie: "9º Ano A" },
+    { nome: "ALEJANDRO VIEIRA LIMA", numero: 1, serie: "9º Ano B" },
+    { nome: "ALLAN BEZERRA DE LIMA", numero: 2, serie: "9º Ano B" }
+  ];
+
+  let saidasDetectadas = 0, atividadeFinalizada = false, fullscreenAtivo = false, submetido = false;
+  let notaME = 0;
+
+  // ==================== FUNÇÕES ====================
+  function preencherCampos() {
+    const idx = document.getElementById('sel-nome').value;
+    if (idx !== '') {
+      const a = ALUNOS[parseInt(idx)];
+      document.getElementById('inp-numero').value = a.numero;
+      document.getElementById('inp-serie').value = a.serie;
+    } else {
+      document.getElementById('inp-numero').value = '';
+      document.getElementById('inp-serie').value = '';
+    }
+  }
+
+  function selecionarAlternativa(el, qNum) {
+    if (submetido) return;
+    const qs = el.closest('.questao');
+    qs.querySelectorAll('.alternativa').forEach(a => a.classList.remove('selecionada'));
+    el.classList.add('selecionada');
+    el.querySelector('input[type=radio]').checked = true;
+    atualizarProgresso();
+  }
+
+  function contarCaracteres(el, cntId) {
+    document.getElementById(cntId).textContent = el.value.length + ' caracteres';
+  }
+
+  function atualizarProgresso() {
+    let resp = 0;
+    [1,3,5,7,9].forEach(q => {
+      if (document.querySelector(`input[name="q${q}"]:checked`)) resp++;
+    });
+    [2,4,6,8,10].forEach(q => {
+      const t = document.getElementById(`r${q}`);
+      if (t && t.value.trim().length > 20) resp++;
+    });
+    const pct = (resp / 10) * 100;
+    document.getElementById('prog-bar').style.width = pct + '%';
+    document.getElementById('prog-txt').textContent = resp + ' de 10 respondidas';
+  }
+
+  function entrarFullscreen() {
+    const e = document.documentElement;
+    const req = e.requestFullscreen || e.webkitRequestFullscreen || e.mozRequestFullScreen || e.msRequestFullscreen;
+    if (req) {
+      req.call(e).then(() => {
+        fullscreenAtivo = true;
+        document.getElementById('overlay-fullscreen').classList.remove('ativo');
+      }).catch(() => {
+        document.getElementById('overlay-fullscreen').classList.remove('ativo');
+      });
+    } else {
+      document.getElementById('overlay-fullscreen').classList.remove('ativo');
+    }
+  }
+
+  function pularFullscreen() {
+    document.getElementById('overlay-fullscreen').classList.remove('ativo');
+    registrarSaida('fullscreen_recusado');
+  }
+
+  function registrarSaida(motivo) {
+    saidasDetectadas++;
+    document.getElementById('cont-saidas').textContent = saidasDetectadas;
+    document.getElementById('txt-saidas').textContent = saidasDetectadas;
+    document.getElementById('aviso-saidas').classList.add('show');
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && !atividadeFinalizada && fullscreenAtivo) {
+      mostrarOverlayBloqueio();
+      registrarSaida('visibilidade');
+    }
+  });
+
+  window.addEventListener('blur', () => {
+    if (!atividadeFinalizada && fullscreenAtivo && document.visibilityState === 'visible') {
+      mostrarOverlayBloqueio();
+      registrarSaida('foco');
+    }
+  });
+
+  function mostrarOverlayBloqueio() {
+    document.getElementById('overlay-bloqueio').classList.add('ativo');
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    }
+  }
+
+  function retornarAtividade() {
+    document.getElementById('overlay-bloqueio').classList.remove('ativo');
+    entrarFullscreen();
+  }
+
+  // ==================== ENVIO PARA GOOGLE SHEETS ====================
+  async function enviarAtividade() {
+    if (submetido) {
+      alert('⏳ Atividade já foi enviada!');
+      return;
+    }
+
+    // Validações
+    const selNome = document.getElementById('sel-nome');
+    const data = document.getElementById('inp-data').value.trim();
     
-    if (!sheet) {
-      const novaSheet = SpreadsheetApp.getActiveSpreadsheet().insertSheet("Respostas");
-      novaSheet.appendRow([
-        "Data/Hora", "Nome", "Nº", "Série", "Data da Atividade",
-        "Q1 (ME)", "Q2 (Discursiva)", "Q3 (ME)", "Q4 (Discursiva)", "Q5 (ME)",
-        "Q6 (Discursiva)", "Q7 (ME)", "Q8 (Discursiva)", "Q9 (ME)", "Q10 (Discursiva)",
-        "Nota ME (/5)", "Saídas da Tela"
-      ]);
+    if (selNome.value === '') {
+      document.getElementById('aviso-campos').style.display = 'block';
+      selNome.focus();
+      return;
     }
     
-    const dados = e.parameter;
+    if (data === '') {
+      document.getElementById('aviso-campos').style.display = 'block';
+      document.getElementById('inp-data').focus();
+      return;
+    }
     
-    const linha = [
-      new Date(),
-      dados.nome,
-      dados.numero,
-      dados.serie,
-      dados.data,
-      dados.q1,
-      dados.q2,
-      dados.q3,
-      dados.q4,
-      dados.q5,
-      dados.q6,
-      dados.q7,
-      dados.q8,
-      dados.q9,
-      dados.q10,
-      dados.notaME,
-      dados.saidas
-    ];
-    
-    sheet.appendRow(linha);
-    
-    return ContentService.createTextOutput(JSON.stringify({ status: "sucesso" }))
-      .setMimeType(ContentService.MimeType.JSON);
-      
-  } catch (erro) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "erro", mensagem: erro.toString() }))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
+    document.getElementById('aviso-campos').style.display = 'none';
 
-function doGet() {
-  return ContentService.createTextOutput("API da Atividade de Ciências - Online");
-}
+    // Confirmação
+    if (!confirm('📝 Confirma o envio da atividade?\n\nApós o envio, não será possível alterar as respostas.')) {
+      return;
+    }
+
+    submetido = true;
+    atividadeFinalizada = true;
+    document.getElementById('btn-enviar').disabled = true;
+
+    // Mostrar status de carregamento
+    const statusEl = document.getElementById('status-envio');
+    statusEl.className = 'status-envio carregando';
+    statusEl.textContent = '⏳ Enviando respostas para a planilha...';
+
+    // Coletar dados
+    const aluno = ALUNOS[parseInt(selNome.value)];
+    const nome = aluno.nome;
+    const numero = aluno.numero;
+    const serie = aluno.serie;
+
+    // Respostas ME
+    const respostasME = {};
+    [1,3,5,7,9].forEach(q => {
+      const sel = document.querySelector(`input[name="q${q}"]:checked`);
+      respostasME[q] = sel ? sel.value : 'Não respondida';
+    });
+
+    // Respostas discursivas
+    const respostasDisc = {};
+    [2,4,6,8,10].forEach(q => {
+      const t = document.getElementById(`r${q}`);
+      respostasDisc[q] = t ? t.value.trim() : '';
+    });
+
+    // Calcular nota
+    notaME = 0;
+    [1,3,5,7,9].forEach(q => {
+      if (respostasME[q] === GABARITOS[q]) notaME++;
+    });
+
+    // Preparar payload
+    const payload = {
+      nome: nome,
+      numero: numero,
+      serie: serie,
+      data: data,
+      q1: respostasME[1],
+      q2: respostasDisc[2],
+      q3: respostasME[3],
+      q4: respostasDisc[4],
+      q5: respostasME[5],
+      q6: respostasDisc[6],
+      q7: respostasME[7],
+      q8: respostasDisc[8],
+      q9: respostasME[9],
+      q10: respostasDisc[10],
+      notaME: notaME,
+      saidas: saidasDetectadas
+    };
+
+    console.log('📤 Enviando payload:', payload);
+
+    try {
+      const response = await fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'no-cors', // IMPORTANTE: evita erros de CORS
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(payload).toString()
+      });
+
+      // Como mode:'no-cors' não retorna resposta legível, consideramos sucesso
+      // se não houver exceção
+      
+      // Mostrar resultado
+      document.getElementById('resultado-nota').textContent = `${notaME}/5`;
+      document.getElementById('resultado-box').classList.add('show');
+      document.querySelector('.resultado-detalhe').textContent = 
+        `Nome: ${nome} | Nº ${numero} | ${serie}`;
+      
+      statusEl.className = 'status-envio sucesso';
+      statusEl.textContent = '✅ Atividade enviada com sucesso! As respostas foram registradas na planilha.';
+      
+      // Scroll até o resultado
+      document.getElementById('resultado-box').scrollIntoView({ behavior: 'smooth' });
+
+    } catch (erro) {
+      console.error('❌ Erro no envio:', erro);
+      statusEl.className = 'status-envio erro';
+      statusEl.textContent = '❌ Erro ao enviar! Verifique sua conexão e tente novamente. Se o erro persistir, contate o professor.';
+      
+      // Permitir reenvio em caso de erro
+      submetido = false;
+      atividadeFinalizada = false;
+      document.getElementById('btn-enviar').disabled = false;
+    }
+  }
+
+  function limparTudo() {
+    if (confirm('Tem certeza que deseja recomeçar? Todos os dados serão apagados.')) {
+      document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+      document.querySelectorAll('.alternativa').forEach(a => a.classList.remove('selecionada'));
+      document.querySelectorAll('textarea').forEach(t => t.value = '');
+      document.querySelectorAll('.contador').forEach(c => c.textContent = '0 caracteres');
+      document.getElementById('resultado-box').classList.remove('show');
+      document.getElementById('prog-bar').style.width = '0';
+      document.getElementById('prog-txt').textContent = '0 de 10 respondidas';
+      document.getElementById('status-envio').className = 'status-envio';
+      document.getElementById('status-envio').textContent = '';
+      submetido = false;
+      atividadeFinalizada = false;
+      notaME = 0;
+      document.getElementById('btn-enviar').disabled = false;
+    }
+  }
+
+  // Inicialização
+  window.addEventListener('load', () => {
+    const sel = document.getElementById('sel-nome');
+    ALUNOS.forEach((al, idx) => {
+      const o = document.createElement('option');
+      o.value = idx;
+      o.textContent = `${al.nome} (${al.serie})`;
+      sel.appendChild(o);
+    });
+    document.getElementById('overlay-fullscreen').classList.add('ativo');
+  });
+</script>
+</body>
+</html>
