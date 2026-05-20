@@ -73,6 +73,13 @@
   #btn-fullscreen:active { transform:translateY(2px); box-shadow:0 2px 0 #7a5c1a; }
 
   /* BARRA SEGURANÇA */
+  /* CABEÇALHO FIXO */
+  .cabecalho-fixo {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 900;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
   .barra-seguranca { background:#0a2a3b; color:#b8e1fc; font-size:.72rem; text-align:center; padding:6px 16px; letter-spacing:.08em; display:flex; align-items:center; justify-content:center; gap:8px; border-bottom:1px solid #2c6280; }
   .barra-seguranca .dot { width:7px; height:7px; background:#3bc9db; border-radius:50%; animation:pulse-dot 2s ease infinite; }
   @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(0.8)} }
@@ -80,13 +87,14 @@
   #aviso-saidas.show { display:flex; }
 
   /* CABEÇALHO */
-  .cabecalho { background:linear-gradient(135deg,#0a2e4d,#0a3f62); color:white; padding:20px 32px 16px; border-bottom:3px solid var(--ouro); box-shadow:0 8px 20px rgba(0,0,0,0.1); }
-  .cabecalho-titulo { font-family:'Crimson Pro',serif; font-size:1.7rem; font-weight:700; text-align:center; letter-spacing:1px; text-shadow:0 2px 5px rgba(0,0,0,0.2); }
-  .cabecalho-sub { text-align:center; font-size:.75rem; opacity:0.85; margin-top:4px; text-transform:uppercase; }
+  .cabecalho { background:linear-gradient(135deg,#0a2e4d,#0a3f62); color:white; padding:14px 32px 12px; border-bottom:3px solid var(--ouro); box-shadow:0 8px 20px rgba(0,0,0,0.1); }
+  .cabecalho-titulo { font-family:'Crimson Pro',serif; font-size:1.4rem; font-weight:700; text-align:center; letter-spacing:1px; text-shadow:0 2px 5px rgba(0,0,0,0.2); }
+  .cabecalho-sub { text-align:center; font-size:.7rem; opacity:0.85; margin-top:2px; text-transform:uppercase; }
 
   /* ID BAR */
-  .id-bar { background:rgba(255,255,255,0.7); backdrop-filter:blur(6px); border-bottom:1px solid rgba(100,130,160,0.4); padding:14px 32px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
-  .cabecalho-linha { display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end; max-width:900px; margin:0 auto; }
+  .id-bar { background:rgba(240,247,255,0.97); backdrop-filter:blur(10px); border-bottom:1px solid rgba(100,130,160,0.4); padding:10px 32px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+  .cabecalho-linha { display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; max-width:900px; margin:0 auto; }
+  #spacer-fixo { transition: height 0.2s; }
   .campo-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; font-weight:700; color:#1f4a6e; margin-bottom:4px; }
   .campo-wrap { flex:1; min-width:180px; }
   .campo-num { width:60px; }
@@ -198,26 +206,26 @@
   <button id="btn-fullscreen" onclick="entrarFullscreen()">▶ Iniciar em Tela Cheia</button>
 </div>
 
-<div class="barra-seguranca">
-  <span class="dot"></span>
-  🔒 MODO AVALIAÇÃO ATIVO — Consultas externas são monitoradas
-  <span class="dot"></span>
-</div>
-<div id="aviso-saidas">⚠️ <strong>Atenção:</strong> <span id="txt-saidas">0</span> saída(s) de tela detectada(s) — registradas.</div>
-
-<div class="cabecalho">
-  <div class="cabecalho-titulo">E.E. Profª Wanda Mascagni de Sá</div>
-  <div class="cabecalho-sub">Secretaria da Educação do Estado de São Paulo</div>
-</div>
-
-<div class="id-bar">
+<div class="cabecalho-fixo" id="cabecalho-fixo">
+  <div class="barra-seguranca">
+    <span class="dot"></span>
+    🔒 MODO AVALIAÇÃO ATIVO — Consultas externas são monitoradas
+    <span class="dot"></span>
+  </div>
+  <div id="aviso-saidas">⚠️ <strong>Atenção:</strong> <span id="txt-saidas">0</span> saída(s) de tela detectada(s) — registradas.</div>
+  <div class="cabecalho">
+    <div class="cabecalho-titulo">E.E. Profª Wanda Mascagni de Sá</div>
+    <div class="cabecalho-sub">Secretaria da Educação do Estado de São Paulo</div>
+  </div>
+  <div class="id-bar">
   <div class="cabecalho-linha">
     <div class="campo-wrap"><div class="campo-label">Nome do Aluno</div><select id="sel-nome" onchange="preencherCampos()"><option value="">— Selecione seu nome —</option></select></div>
     <div class="campo-num"><div class="campo-label">Nº</div><input type="text" id="inp-numero" readonly style="cursor:default;text-align:center;"></div>
     <div class="campo-fixo"><div class="campo-label">Série</div><input type="text" id="inp-serie" readonly></div>
     <div class="campo-fixo"><div class="campo-label">Data</div><input type="text" id="inp-data" placeholder="dd/mm/aaaa" oninput="mascaraData(this)"></div>
-  </div>
-</div>
+  </div><!-- fim id-bar -->
+</div><!-- fim cabecalho-fixo -->
+<div id="spacer-fixo"></div>
 
 <div class="corpo">
   <div class="atividade-titulo">Atividade de Ciências</div>
@@ -440,6 +448,11 @@
   // ═══════════════════════════════════════════════════
   // INICIALIZAÇÃO
   // ═══════════════════════════════════════════════════
+  function ajustarSpacer() {
+    const h = document.getElementById('cabecalho-fixo').offsetHeight;
+    document.getElementById('spacer-fixo').style.height = h + 'px';
+  }
+
   window.onload = () => {
     const sel = document.getElementById('sel-nome');
     ALUNOS.forEach((al, idx) => {
@@ -449,6 +462,8 @@
       sel.appendChild(o);
     });
     document.getElementById('overlay-fullscreen').classList.add('ativo');
+    ajustarSpacer();
+    window.addEventListener('resize', ajustarSpacer);
     configurarAntiCola();
   };
 
@@ -794,6 +809,7 @@ Responda em português, de forma encorajadora mas precisa. Não use marcadores o
     document.getElementById('txt-saidas').textContent = saidasDetectadas;
     document.getElementById('aviso-saidas').classList.add('show');
     document.getElementById('overlay-bloqueio').classList.add('ativo');
+    setTimeout(ajustarSpacer, 50);
   }
 
   function retornarAtividade() {
