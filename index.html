@@ -739,6 +739,13 @@
       sel.appendChild(o);
     });
     document.getElementById('overlay-fullscreen').classList.add('ativo');
+    
+    // Preencher data automaticamente
+    const hoje = new Date();
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const ano = hoje.getFullYear();
+    document.getElementById('inp-data').value = `${dia}/${mes}/${ano}`;
   });
 </script>
 </body>
