@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atividade de Ciências – 2º Bimestre – 9º Ano</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #1a5c2a;
+    --verde-medio: #2e7d42;
+    --verde-claro: #d6ead9;
+    --verde-pale: #f0f7f1;
+    --dourado: #c8961a;
+    --texto: #1a1f1b;
+    --cinza: #5a6360;
+    --borda: #b0c8b4;
+    --branco: #ffffff;
+    --erro: #c0392b;
+    --acerto: #1a6b35;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f4f7f5;
+    color: var(--texto);
+    min-height: 100vh;
+    padding: 0 0 60px 0;
+    /* Impedir seleção de texto para dificultar cópia */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+
+  /* Permitir seleção nas áreas de resposta */
+  textarea, input, select {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    user-select: text;
+  }
+
+  /* ─── OVERLAY DE BLOQUEIO ─── */
+  #overlay-bloqueio {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(10, 30, 15, 0.97);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding: 32px;
+  }
+  #overlay-bloqueio.ativo { display: flex; }
+  #overlay-bloqueio .alerta-icone {
+    font-size: 4rem;
+    animation: pisca 1s ease-in-out infinite;
+  }
+  @keyframes pisca { 0%,100%{opacity:1} 50%{opacity:.4} }
+  #overlay-bloqueio h2 {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.8rem;
+    color: #f7c948;
+    font-weight: 700;
+  }
+  #overlay-bloqueio p {
+    color: #c8d8ca;
+    font-size: 1rem;
+    max-width: 440px;
+    line-height: 1.6;
+  }
+  #overlay-bloqueio .contador-alerta {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #e74c3c;
+    font-family: 'Crimson Pro', serif;
+    min-width: 60px;
+    text-align: center;
+  }
+  #btn-retornar {
+    margin-top: 8px;
+    padding: 14px 36px;
+    background: #1a5c2a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s;
+    border: 2px solid #2e7d42;
+  }
+  #btn-retornar:hover { background: #2e7d42; }
+
+  /* ─── OVERLAY DE TELA CHEIA ─── */
+  #overlay-fullscreen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    background: rgba(10, 30, 15, 0.97);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding: 32px;
+  }
+  #overlay-fullscreen.ativo { display: flex; }
+  #overlay-fullscreen h2 {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.8rem;
+    color: #f7c948;
+    font-weight: 700;
+  }
+  #overlay-fullscreen p {
+    color: #c8d8ca;
+    font-size: 1rem;
+    max-width: 440px;
+    line-height: 1.6;
+  }
+  #btn-fullscreen {
+    padding: 14px 36px;
+    background: #c8961a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid #e8b030;
+    transition: background .2s;
+  }
+  #btn-fullscreen:hover { background: #e8b030; }
+
+  /* ─── BARRA DE SEGURANÇA ─── */
+  .barra-seguranca {
+    background: #0d3318;
+    color: #7ec98a;
+    font-size: .72rem;
+    text-align: center;
+    padding: 5px 16px;
+    letter-spacing: .08em;
+    border-bottom: 1px solid #1a5c2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .barra-seguranca .dot {
+    width: 7px; height: 7px;
+    background: #2ecc71;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse-dot 2s ease infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:.5;transform:scale(0.8)}
+  }
+  #aviso-saidas {
+    background: #fff3cd;
+    border: 1.5px solid #c8961a;
+    color: #6b4800;
+    font-size: .8rem;
+    text-align: center;
+    padding: 6px 16px;
+    display: none;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+  }
+  #aviso-saidas.show { display: flex; }
+
+  /* ─── CABEÇALHO ─── */
+  .cabecalho {
+    background: var(--verde);
+    color: white;
+    padding: 18px 32px 14px;
+    border-bottom: 4px solid var(--dourado);
+    position: relative;
+    overflow: hidden;
+  }
+  .cabecalho::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      135deg,
+      transparent,
+      transparent 24px,
+      rgba(255,255,255,0.03) 24px,
+      rgba(255,255,255,0.03) 25px
+    );
+  }
+  .cabecalho-titulo {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.55rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-align: center;
+    text-shadow: 0 1px 3px rgba(0,0,0,.3);
+  }
+  .cabecalho-sub {
+    text-align: center;
+    font-size: .75rem;
+    opacity: .75;
+    margin-top: 2px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  /* Barra de identificação */
+  .id-bar {
+    background: white;
+    border-bottom: 2px solid var(--borda);
+    padding: 14px 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.07);
+  }
+  .cabecalho-linha {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: flex-end;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .campo-label {
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-weight: 600;
+    color: var(--cinza);
+    margin-bottom: 4px;
+  }
+  .campo-wrap { flex: 1; min-width: 180px; }
+  .campo-serie { flex: 0 0 auto; }
+  .campo-num  { flex: 0 0 64px; }
+  .campo-fixo { flex: 0 0 110px; }
+
+  select, input[type=text] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1.5px solid #ccc;
+    border-radius: 6px;
+    background: white;
+    color: var(--texto);
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem;
+    outline: none;
+    transition: border .2s, box-shadow .2s;
+    cursor: pointer;
+  }
+  select option { color: var(--texto); background: white; }
+  select:focus, input[type=text]:focus {
+    border-color: var(--verde-medio);
+    box-shadow: 0 0 0 2px rgba(46,125,66,.2);
+  }
+  .campo-data { flex: 0 0 auto; }
+  input.data-inp { width: 130px; }
+
+  /* ─── CORPO ─── */
+  .corpo {
+    max-width: 820px;
+    margin: 28px auto;
+    padding: 0 18px;
+  }
+
+  .atividade-titulo {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--verde);
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .atividade-subtitulo {
+    text-align: center;
+    font-size: .78rem;
+    color: var(--cinza);
+    letter-spacing: .08em;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  /* ─── QUESTÕES ─── */
+  .questao {
+    background: white;
+    border: 1.5px solid var(--borda);
+    border-radius: 10px;
+    margin-bottom: 22px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(26,92,42,.07);
+    transition: box-shadow .2s;
+  }
+  .questao:hover { box-shadow: 0 4px 16px rgba(26,92,42,.12); }
+
+  .questao-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px 12px;
+    border-bottom: 1.5px solid var(--borda);
+    background: var(--verde-pale);
+  }
+  .num {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    background: var(--verde);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+  .questao-tipo {
+    font-size: .65rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    background: var(--verde-claro);
+    color: var(--verde);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .questao-tipo.discursiva { background: #fff3d0; color: #8a6000; }
+
+  .questao-enunciado {
+    padding: 16px 18px 10px;
+    font-size: .95rem;
+    line-height: 1.65;
+    color: var(--texto);
+  }
+  .questao-enunciado strong { color: var(--verde); }
+
+  .questao-imagem {
+    width: 100%;
+    max-width: 450px;
+    margin: 12px auto;
+    display: block;
+    border-radius: 8px;
+    border: 1px solid var(--borda);
+    pointer-events: none; /* impedir arrastar imagem */
+  }
+
+  .questao-contexto {
+    background: var(--verde-pale);
+    border-left: 3px solid var(--verde-medio);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin: 10px 18px;
+    font-size: .88rem;
+    color: var(--cinza);
+    font-style: italic;
+    line-height: 1.55;
+  }
+
+  /* ─── ALTERNATIVAS ─── */
+  .alternativas { padding: 8px 18px 16px; }
+  .alternativa {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 14px;
+    margin: 6px 0;
+    border: 1.5px solid var(--borda);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s;
+    font-size: .9rem;
+    line-height: 1.5;
+  }
+  .alternativa:hover { background: var(--verde-pale); border-color: var(--verde-medio); }
+  .alternativa input[type=radio] { display: none; }
+  .letra {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border: 2px solid var(--borda);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600;
+    font-size: .82rem;
+    color: var(--cinza);
+    transition: all .15s;
+  }
+  .alternativa.selecionada { background: var(--verde-claro); border-color: var(--verde); }
+  .alternativa.selecionada .letra {
+    background: var(--verde); border-color: var(--verde); color: white;
+  }
+  .alternativa.correta { background: #e6f4ea; border-color: var(--acerto); }
+  .alternativa.correta .letra { background: var(--acerto); border-color: var(--acerto); color: white; }
+  .alternativa.errada { background: #fdecea; border-color: var(--erro); }
+  .alternativa.errada .letra { background: var(--erro); border-color: var(--erro); color: white; }
+  .alternativa.gabarito { background: #e6f4ea; border-color: var(--acerto); }
+
+  /* ─── DISCURSIVAS ─── */
+  .discursiva-area { padding: 8px 18px 16px; }
+  textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--borda);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .9rem;
+    line-height: 1.6;
+    resize: vertical;
+    color: var(--texto);
+    transition: border .2s;
+    outline: none;
+  }
+  textarea:focus { border-color: var(--verde-medio); }
+  .contador { text-align: right; font-size: .72rem; color: var(--cinza); margin-top: 4px; }
+
+  /* ─── FEEDBACK IA ─── */
+  .feedback-ia {
+    margin: 8px 18px 16px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: .88rem;
+    line-height: 1.6;
+    display: none;
+    border-left: 4px solid;
+  }
+  .feedback-ia.acerto { background: #e6f4ea; border-color: var(--acerto); color: #144d28; }
+  .feedback-ia.parcial { background: #fff8e1; border-color: var(--dourado); color: #6b4c00; }
+  .feedback-ia.erro { background: #fdecea; border-color: var(--erro); color: #7b1a13; }
+  .feedback-ia.loading { background: var(--verde-pale); border-color: var(--borda); color: var(--cinza); }
+  .feedback-icone { font-size: 1.1rem; margin-right: 6px; }
+
+  /* ─── NOTA MÚLTIPLA ESCOLHA ─── */
+  .feedback-me {
+    margin: 0 18px 14px;
+    font-size: .84rem;
+    font-weight: 600;
+    display: none;
+  }
+
+  /* ─── BOTÕES ─── */
+  .botoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 12px;
+  }
+  .btn {
+    padding: 13px 32px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .03em;
+  }
+  .btn-primary {
+    background: var(--verde);
+    color: white;
+    box-shadow: 0 2px 8px rgba(26,92,42,.3);
+  }
+  .btn-primary:hover { background: var(--verde-medio); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(26,92,42,.35); }
+  .btn-primary:disabled { background: #aaa; box-shadow: none; cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    background: white;
+    color: var(--verde);
+    border: 1.5px solid var(--verde);
+  }
+  .btn-secondary:hover { background: var(--verde-pale); }
+
+  /* ─── RESULTADO ─── */
+  .resultado-box {
+    background: white;
+    border: 2px solid var(--verde);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-top: 28px;
+    text-align: center;
+    display: none;
+    box-shadow: 0 4px 20px rgba(26,92,42,.12);
+  }
+  .resultado-box.show { display: block; }
+  .resultado-nota {
+    font-family: 'Crimson Pro', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--verde);
+    line-height: 1;
+  }
+  .resultado-label { font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: var(--cinza); margin-bottom: 12px; }
+  .resultado-detalhe { font-size: .9rem; color: var(--cinza); margin-top: 8px; }
+
+  /* ─── STATUS ENVIO ─── */
+  .status-envio {
+    text-align: center;
+    margin-top: 14px;
+    font-size: .88rem;
+    color: var(--cinza);
+    display: none;
+  }
+  .status-envio.ok { color: var(--acerto); }
+  .status-envio.err { color: var(--erro); }
+
+  /* ─── SPINNER ─── */
+  .spin {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(0,0,0,.15);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin .6s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .progress-bar-wrap {
+    background: var(--verde-claro);
+    border-radius: 20px;
+    height: 6px;
+    margin: 18px 0 8px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: var(--verde);
+    border-radius: 20px;
+    width: 0;
+    transition: width .4s ease;
+  }
+  .progress-txt { text-align: right; font-size: .72rem; color: var(--cinza); }
+
+  .aviso {
+    background: #fff3d0;
+    border: 1.5px solid var(--dourado);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: .84rem;
+    color: #6b4800;
+    margin-bottom: 18px;
+    display: none;
+  }
+  .aviso.show { display: block; }
+
+  @media(max-width:600px) {
+    .cabecalho { padding: 14px 16px; }
+    .cabecalho-titulo { font-size: 1.15rem; }
+    .corpo { padding: 0 10px; }
+    .questao-enunciado, .alternativas, .discursiva-area { padding-left: 12px; padding-right: 12px; }
+    .questao-contexto { margin: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ OVERLAY: SAIU DA TELA ═══════════════ -->
+<div id="overlay-bloqueio">
+  <div class="alerta-icone">🚫</div>
+  <h2>Atividade Interrompida!</h2>
+  <p>Você saiu da aba da atividade ou tentou abrir outra janela.<br>
+     Isso <strong style="color:#f7c948">não é permitido</strong> durante a avaliação.<br>
+     Esta ocorrência será registrada.</p>
+  <div>
+    <div style="color:#c8d8ca;font-size:.85rem;margin-bottom:6px;">Saídas detectadas:</div>
+    <div class="contador-alerta" id="cont-saidas">0</div>
+  </div>
+  <button id="btn-retornar" onclick="retornarAtividade()">↩ Retornar à Atividade</button>
+  <p style="font-size:.75rem;opacity:.6;margin-top:4px;">O professor será informado sobre esta ocorrência.</p>
+</div>
+
+<!-- ═══════════════ OVERLAY: SOLICITAR TELA CHEIA ═══════════════ -->
+<div id="overlay-fullscreen">
+  <div style="font-size:3rem;">🖥️</div>
+  <h2>Modo Avaliação</h2>
+  <p>Para realizar esta atividade, a página precisa abrir em <strong style="color:#f7c948">tela cheia</strong>.<br>
+     Isso impede consultas externas durante a avaliação.</p>
+  <button id="btn-fullscreen" onclick="entrarFullscreen()">▶ Iniciar em Tela Cheia</button>
+  <p style="font-size:.78rem;color:#7ec98a;margin-top:8px;">Pressione ESC apenas após finalizar e enviar a atividade.</p>
+</div>
+
+<!-- BARRA DE SEGURANÇA -->
+<div class="barra-seguranca">
+  <span class="dot"></span>
+  🔒 MODO AVALIAÇÃO ATIVO — Consultas externas são monitoradas e registradas
+  <span class="dot"></span>
+</div>
+<div id="aviso-saidas">
+  ⚠️ <strong>Atenção:</strong> <span id="txt-saidas">0</span> saída(s) de tela detectada(s) — registradas para o professor.
+</div>
+
+<!-- ═══════════════ CABEÇALHO ═══════════════ -->
+<div class="cabecalho">
+  <div class="cabecalho-titulo">E.E. Profª Wanda Mascagni de Sá</div>
+  <div class="cabecalho-sub">Secretaria da Educação do Estado de São Paulo</div>
+</div>
+
+<!-- BARRA DE IDENTIFICAÇÃO -->
+<div class="id-bar">
+  <div class="cabecalho-linha">
+    <div class="campo-wrap">
+      <div class="campo-label">Nome do Aluno</div>
+      <select id="sel-nome" onchange="preencherCampos()">
+        <option value="">— Selecione seu nome —</option>
+      </select>
+    </div>
+    <div class="campo-num">
+      <div class="campo-label">Nº</div>
+      <input type="text" id="inp-numero" readonly style="cursor:default;text-align:center;font-weight:600;">
+    </div>
+    <div class="campo-fixo">
+      <div class="campo-label">Série</div>
+      <input type="text" id="inp-serie" readonly style="cursor:default;">
+    </div>
+    <div class="campo-fixo">
+      <div class="campo-label">Data</div>
+      <input type="text" id="inp-data" placeholder="dd/mm/aaaa">
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CORPO ═══════════════ -->
+<div class="corpo">
+  <div class="atividade-titulo">Atividade de Ciências</div>
+  <div class="atividade-subtitulo">2º Bimestre · Genética e Hereditariedade · 9º Ano</div>
+
+  <div class="aviso" id="aviso-campos">⚠️ Por favor, preencha o número, o nome e a data antes de enviar.</div>
+
+  <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar"></div></div>
+  <div class="progress-txt" id="prog-txt">0 de 10 respondidas</div>
+
+  <form id="form-atividade" onsubmit="return false;">
+
+    <!-- ══════════ Q1 – MÚLTIPLA ESCOLHA ══════════ -->
+    <div class="questao" data-q="1" data-tipo="me" data-gabarito="B">
+      <div class="questao-header">
+        <div class="num">1</div>
+        <span class="questao-tipo">Múltipla Escolha</span>
+      </div>
+      <div class="questao-enunciado">
+        <strong>DNA e hereditariedade:</strong> Durante a reprodução sexuada, o material genético dos pais é transmitido aos filhos por meio dos gametas. Sobre esse processo, assinale a alternativa <strong>correta</strong>:
+      </div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/WzermqkjHbMLerMm.png" alt="Estrutura do DNA" class="questao-imagem">
+      <div class="questao-contexto">
+        Na fecundação, cada gameta contribui com metade do DNA que formará o novo indivíduo. Isso significa que o filho recebe informações genéticas de ambos os progenitores.
+      </div>
+      <div class="alternativas">
+        <label class="alternativa" onclick="selecionarAlternativa(this,1)">
+          <input type="radio" name="q1" value="A">
+          <div class="letra">A</div>
+          <span>O filho herda 100% do DNA da mãe, pois o óvulo é maior que o espermatozoide e contém mais informação genética.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,1)">
+          <input type="radio" name="q1" value="B">
+          <div class="letra">B</div>
+          <span>Cada progenitor contribui com 50% do DNA do filho, que recebe cromossomos de ambos os pais.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,1)">
+          <input type="radio" name="q1" value="C">
+          <div class="letra">C</div>
+          <span>O DNA é transmitido apenas pelos cromossomos autossomos, sendo os cromossomos sexuais herdados somente da mãe.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,1)">
+          <input type="radio" name="q1" value="D">
+          <div class="letra">D</div>
+          <span>Os gametas são células diploides (2n), por isso o filho nasce com o quádruplo do número de cromossomos dos pais.</span>
+        </label>
+      </div>
+      <div class="feedback-me" id="fbme-1"></div>
+    </div>
+
+    <!-- ══════════ Q2 – DISCURSIVA ══════════ -->
+    <div class="questao" data-q="2" data-tipo="discursiva">
+      <div class="questao-header">
+        <div class="num">2</div>
+        <span class="questao-tipo discursiva">Discursiva</span>
+      </div>
+      <div class="questao-enunciado">
+        <strong>Estrutura química do DNA:</strong> O DNA é formado por unidades chamadas nucleotídeos. Descreva as três partes que compõem cada nucleotídeo e explique por que a sequência de bases nitrogenadas é considerada o "código da vida".
+      </div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/LaUIxSXOxrjUrrLU.png" alt="Estrutura do Nucleotídeo" class="questao-imagem">
+      <div class="questao-contexto">
+        Lembre-se que as quatro bases nitrogenadas do DNA são: Adenina (A), Timina (T), Citosina (C) e Guanina (G), e que elas se pareiam de forma específica: A–T e C–G.
+      </div>
+      <div class="discursiva-area">
+        <textarea id="r2" placeholder="Escreva sua resposta aqui..." oninput="contarCaracteres(this,'cnt2'); atualizarProgresso()"></textarea>
+        <div class="contador" id="cnt2">0 caracteres</div>
+      </div>
+      <div class="feedback-ia" id="fb2"></div>
+    </div>
+
+    <!-- ══════════ Q3 – MÚLTIPLA ESCOLHA ══════════ -->
+    <div class="questao" data-q="3" data-tipo="me" data-gabarito="C">
+      <div class="questao-header">
+        <div class="num">3</div>
+        <span class="questao-tipo">Múltipla Escolha</span>
+      </div>
+      <div class="questao-enunciado">
+        <strong>Bases nitrogenadas:</strong> As bases nitrogenadas do DNA se ligam em pares específicos por pontes de hidrogênio. Se uma fita de DNA apresenta a sequência A-T-C-G-A, qual é a sequência da fita complementar?
+      </div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/KlACXetYPZmFRlxt.png" alt="Pares de Bases Nitrogenadas" class="questao-imagem">
+      <div class="alternativas">
+        <label class="alternativa" onclick="selecionarAlternativa(this,3)">
+          <input type="radio" name="q3" value="A">
+          <div class="letra">A</div>
+          <span>A-T-C-G-A (idêntica à original)</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,3)">
+          <input type="radio" name="q3" value="B">
+          <div class="letra">B</div>
+          <span>T-A-G-C-T</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,3)">
+          <input type="radio" name="q3" value="C">
+          <div class="letra">C</div>
+          <span>T-A-G-C-T (lida no sentido 3'→5', com A pareando com T e C com G)</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,3)">
+          <input type="radio" name="q3" value="D">
+          <div class="letra">D</div>
+          <span>A-U-G-C-A (com Uracila substituindo a Timina)</span>
+        </label>
+      </div>
+      <div class="feedback-me" id="fbme-3"></div>
+    </div>
+
+    <!-- ══════════ Q4 – DISCURSIVA ══════════ -->
+    <div class="questao" data-q="4" data-tipo="discursiva">
+      <div class="questao-header">
+        <div class="num">4</div>
+        <span class="questao-tipo discursiva">Discursiva</span>
+      </div>
+      <div class="questao-enunciado">
+        <strong>Rosalind Franklin e a ciência:</strong> Rosalind Franklin foi fundamental para a descoberta da estrutura em dupla-hélice do DNA, mas não recebeu o devido reconhecimento em vida. Watson e Crick utilizaram suas imagens de cristalografia de raios-X sem os devidos créditos.
+      </div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/feHiFTSkJuNigjlY.jpg" alt="Foto 51 de Rosalind Franklin" class="questao-imagem">
+      <div class="questao-enunciado">
+        Com base nessa história, responda: qual foi a contribuição de Rosalind Franklin para a ciência? Por que é importante reconhecer o papel de todas as pessoas na construção do conhecimento científico?
+      </div>
+      <div class="discursiva-area">
+        <textarea id="r4" placeholder="Escreva sua resposta aqui..." oninput="contarCaracteres(this,'cnt4'); atualizarProgresso()"></textarea>
+        <div class="contador" id="cnt4">0 caracteres</div>
+      </div>
+      <div class="feedback-ia" id="fb4"></div>
+    </div>
+
+    <!-- ══════════ Q5 – MÚLTIPLA ESCOLHA ══════════ -->
+    <div class="questao" data-q="5" data-tipo="me" data-gabarito="A">
+      <div class="questao-header">
+        <div class="num">5</div>
+        <span class="questao-tipo">Múltipla Escolha</span>
+      </div>
+      <div class="questao-enunciado">
+        <strong>Compactação do DNA – Cromatina:</strong> O DNA humano, se estendido completamente, mediria cerca de 2 metros — mas precisa caber em um núcleo celular microscópico. Sobre os mecanismos de compactação do DNA, é <strong>correto</strong> afirmar:
+      </div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/WEizGXriWaGEHMdw.png" alt="Compactação do DNA" class="questao-imagem">
+      <div class="questao-contexto">
+        O DNA se enrola em proteínas chamadas histonas, formando nucleossomos. A eucromatina é menos compactada e permite a expressão gênica; a heterocromatina é mais compactada e corresponde a genes inativos.
+      </div>
+      <div class="alternativas">
+        <label class="alternativa" onclick="selecionarAlternativa(this,5)">
+          <input type="radio" name="q5" value="A">
+          <div class="letra">A</div>
+          <span>O DNA se enrola ao redor de proteínas chamadas histonas, formando nucleossomos, que podem se compactar ainda mais em fibras de cromatina e, eventualmente, em cromossomos.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,5)">
+          <input type="radio" name="q5" value="B">
+          <div class="letra">B</div>
+          <span>A heterocromatina é a forma menos compactada do DNA e corresponde aos genes mais ativos da célula.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,5)">
+          <input type="radio" name="q5" value="C">
+          <div class="letra">C</div>
+          <span>Os nucleossomos são formados pela associação de bases nitrogenadas com o grupo fosfato, sem a participação de proteínas.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,5)">
+          <input type="radio" name="q5" value="D">
+          <div class="letra">D</div>
+          <span>A compactação do DNA impede completamente que qualquer gene seja expresso, pois bloqueia o acesso de todas as enzimas ao material genético.</span>
+        </label>
+      </div>
+      <div class="feedback-me" id="fbme-5"></div>
+    </div>
+
+    <!-- ══════════ Q6 – DISCURSIVA ══════════ -->
+    <div class="questao" data-q="6" data-tipo="discursiva">
+      <div class="questao-header">
+        <div class="num">6</div>
+        <span class="questao-tipo discursiva">Discursiva</span>
+      </div>
+      <div class="questao-enunciado">
+        <strong>Células haploides e diploides:</strong> Todas as células do corpo humano têm o mesmo DNA, mas existem dois tipos quanto ao número de conjuntos de cromossomos: haploides (n) e diploides (2n).
+      </div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/LqTIRCktqmMRMIbT.png" alt="Células Haploides e Diploides" class="questao-imagem">
+      <div class="questao-enunciado">
+        Explique a diferença entre células haploides e diploides, cite exemplos de cada tipo no corpo humano e explique por que essa distinção é essencial para a reprodução e para a manutenção do número correto de cromossomos ao longo das gerações.
+      </div>
+      <div class="discursiva-area">
+        <textarea id="r6" placeholder="Escreva sua resposta aqui..." oninput="contarCaracteres(this,'cnt6'); atualizarProgresso()"></textarea>
+        <div class="contador" id="cnt6">0 caracteres</div>
+      </div>
+      <div class="feedback-ia" id="fb6"></div>
+    </div>
+
+    <!-- ══════════ Q7 – MÚLTIPLA ESCOLHA ══════════ -->
+    <div class="questao" data-q="7" data-tipo="me" data-gabarito="D">
+      <div class="questao-header">
+        <div class="num">7</div>
+        <span class="questao-tipo">Múltipla Escolha</span>
+      </div>
+      <div class="questao-enunciado">
+        <strong>Cariótipo humano:</strong> O cariótipo é a representação organizada dos cromossomos de um indivíduo. Com base no que você estudou sobre o cariótipo humano, assinale a alternativa <strong>correta</strong>:
+      </div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/kDMbyOiGkttruoTm.png" alt="Cariótipo Humano" class="questao-imagem">
+      <div class="alternativas">
+        <label class="alternativa" onclick="selecionarAlternativa(this,7)">
+          <input type="radio" name="q7" value="A">
+          <div class="letra">A</div>
+          <span>Os seres humanos possuem 46 pares de cromossomos, totalizando 92 cromossomos no núcleo de cada célula somática.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,7)">
+          <input type="radio" name="q7" value="B">
+          <div class="letra">B</div>
+          <span>Os 23 pares de cromossomos humanos são todos autossomos, pois os cromossomos sexuais são separados do cariótipo.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,7)">
+          <input type="radio" name="q7" value="C">
+          <div class="letra">C</div>
+          <span>O cromossomo Y é exclusivo do sexo biológico feminino e determina a produção de estrógeno.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,7)">
+          <input type="radio" name="q7" value="D">
+          <div class="letra">D</div>
+          <span>Os humanos possuem 46 cromossomos organizados em 23 pares: 22 pares de autossomos e 1 par de cromossomos sexuais (XX ou XY).</span>
+        </label>
+      </div>
+      <div class="feedback-me" id="fbme-7"></div>
+    </div>
+
+    <!-- ══════════ Q8 – DISCURSIVA ══════════ -->
+    <div class="questao" data-q="8" data-tipo="discursiva">
+      <div class="questao-header">
+        <div class="num">8</div>
+        <span class="questao-tipo discursiva">Discursiva</span>
+      </div>
+      <div class="questao-enunciado">
+        <strong>Genes e diferenciação celular:</strong> Todas as células do corpo humano — da pele, do músculo, do neurônio — possuem exatamente o mesmo DNA. Mesmo assim, cada tipo de célula tem uma função completamente diferente.
+      </div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/kiABFYtQMecJcGJJ.png" alt="Diferenciação Celular" class="questao-imagem">
+      <div class="questao-enunciado">
+        Como é possível que células com o mesmo DNA desempenhem funções tão distintas? Explique o papel dos genes, da eucromatina e da heterocromatina nesse processo de diferenciação celular.
+      </div>
+      <div class="discursiva-area">
+        <textarea id="r8" placeholder="Escreva sua resposta aqui..." oninput="contarCaracteres(this,'cnt8'); atualizarProgresso()"></textarea>
+        <div class="contador" id="cnt8">0 caracteres</div>
+      </div>
+      <div class="feedback-ia" id="fb8"></div>
+    </div>
+
+    <!-- ══════════ Q9 – MÚLTIPLA ESCOLHA ══════════ -->
+    <div class="questao" data-q="9" data-tipo="me" data-gabarito="B">
+      <div class="questao-header">
+        <div class="num">9</div>
+        <span class="questao-tipo">Múltipla Escolha</span>
+      </div>
+      <div class="questao-enunciado">
+        <strong>Estrutura dos cromossomos:</strong> Durante a divisão celular, os cromossomos se tornam visíveis ao microscópio graças à sua alta compactação. Sobre a estrutura dos cromossomos, é <strong>correto</strong> afirmar:
+      </div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/qHvJJlpKTFGvrvWJ.jpg" alt="Estrutura do Cromossomo" class="questao-imagem">
+      <div class="questao-contexto">
+        Cada cromossomo é composto por duas cromátides-irmãs unidas pelo centrômero. Os braços do cromossomo podem ter tamanhos diferentes conforme a posição do centrômero.
+      </div>
+      <div class="alternativas">
+        <label class="alternativa" onclick="selecionarAlternativa(this,9)">
+          <input type="radio" name="q9" value="A">
+          <div class="letra">A</div>
+          <span>O centrômero é a região do cromossomo responsável pela síntese de proteínas e localiza-se sempre no centro exato da estrutura.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,9)">
+          <input type="radio" name="q9" value="B">
+          <div class="letra">B</div>
+          <span>Cada cromossomo é formado por duas cromátides-irmãs unidas pelo centrômero; os braços do cromossomo podem ter tamanhos diferentes conforme a posição desse centrômero.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,9)">
+          <input type="radio" name="q9" value="C">
+          <div class="letra">C</div>
+          <span>Os cromossomos são estruturas permanentemente visíveis ao microscópio óptico em todas as fases do ciclo celular.</span>
+        </label>
+        <label class="alternativa" onclick="selecionarAlternativa(this,9)">
+          <input type="radio" name="q9" value="D">
+          <div class="letra">D</div>
+          <span>Cromátides-irmãs são dois cromossomos diferentes que se pareiam durante a interfase para facilitar a replicação do DNA.</span>
+        </label>
+      </div>
+      <div class="feedback-me" id="fbme-9"></div>
+    </div>
+
+    <!-- ══════════ Q10 – DISCURSIVA ══════════ -->
+    <div class="questao" data-q="10" data-tipo="discursiva">
+      <div class="questao-header">
+        <div class="num">10</div>
+        <span class="questao-tipo discursiva">Discursiva</span>
+      </div>
+      <div class="questao-enunciado">
+        <strong>DNA: do nucleotídeo ao cromossomo:</strong> O DNA percorre um longo caminho de organização antes de se tornar um cromossomo visível. Descreva essa hierarquia de estruturas cromossômicas em ordem crescente de compactação, desde o nucleotídeo até o cromossomo, explicando a função de cada nível de organização.
+      </div>
+      <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/fMdrvVISYxihUYJU.png" alt="Hierarquia de Organização do DNA" class="questao-imagem">
+      <div class="questao-contexto">
+        Pense na seguinte sequência: nucleotídeo → DNA → nucleossomo → fibra de cromatina → cromossomo. Qual é o papel de cada nível?
+      </div>
+      <div class="discursiva-area">
+        <textarea id="r10" placeholder="Escreva sua resposta aqui..." oninput="contarCaracteres(this,'cnt10'); atualizarProgresso()"></textarea>
+        <div class="contador" id="cnt10">0 caracteres</div>
+      </div>
+      <div class="feedback-ia" id="fb10"></div>
+    </div>
+
+    <!-- BOTÕES -->
+    <div class="aviso" id="aviso-campos2">⚠️ Por favor, preencha o número, o nome e a data antes de enviar.</div>
+    <div class="botoes">
+      <button type="button" class="btn btn-primary" id="btn-enviar" onclick="enviarAtividade()">
+        ✅ Enviar Atividade
+      </button>
+      <button type="button" class="btn btn-secondary" onclick="limparTudo()">
+        🔄 Recomeçar
+      </button>
+    </div>
+
+    <div class="status-envio" id="status-envio"></div>
+
+    <!-- RESULTADO -->
+    <div class="resultado-box" id="resultado-box">
+      <div class="resultado-label">Nota nas questões objetivas</div>
+      <div class="resultado-nota" id="resultado-nota">—</div>
+      <div class="resultado-detalhe" id="resultado-detalhe"></div>
+      <div style="margin-top:16px;font-size:.84rem;color:var(--cinza);">
+        📊 Respostas registradas na planilha do professor.<br>
+        As questões discursivas serão corrigidas pelo professor.
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<!-- ═══════════════ SCRIPT ═══════════════ -->
+<script>
+// ════════════════════════════════════════════════
+// ⚙️  CONFIGURAÇÕES
+// ════════════════════════════════════════════════
+const GAS_URL = "https://script.google.com/macros/s/AKfycbycLVCj11OduOZ10Uf75HGDqqwG_ymqtRwfttxeZTbZS_hpBSonk9XJpT1wCFWN6bXB/exec";
+const SHEET_ID = "1CzqPjjGlniT16bAGYI5T9KGfgUvKVMRsgdyHX2KC6gA";
+const ABA_NOME = "Notas da atividade 9ºAno";
+const GABARITOS = { 1:"B", 3:"C", 5:"A", 7:"D", 9:"B" };
+
+// ════════════════════════════════════════════════
+// 🔒  SISTEMA ANTI-CONSULTA
+// ════════════════════════════════════════════════
+let saidasDetectadas = 0;
+let atividadeFinalizada = false;
+let fullscreenAtivo = false;
+
+// — Solicitar tela cheia ao iniciar —
+function entrarFullscreen() {
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if (req) {
+    req.call(el).then(() => {
+      fullscreenAtivo = true;
+      document.getElementById('overlay-fullscreen').classList.remove('ativo');
+    }).catch(() => {
+      // Se não conseguir fullscreen (ex: mobile sem suporte), liberar mesmo assim
+      document.getElementById('overlay-fullscreen').classList.remove('ativo');
+    });
+  } else {
+    document.getElementById('overlay-fullscreen').classList.remove('ativo');
+  }
+}
+
+// — Detectar saída do fullscreen —
+function aoMudarFullscreen() {
+  const emFS = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+  if (!emFS && fullscreenAtivo && !atividadeFinalizada) {
+    fullscreenAtivo = false;
+    registrarSaida('saiu do modo tela cheia');
+    // Reapresentar overlay de fullscreen
+    document.getElementById('overlay-fullscreen').classList.add('ativo');
+  }
+}
+document.addEventListener('fullscreenchange', aoMudarFullscreen);
+document.addEventListener('webkitfullscreenchange', aoMudarFullscreen);
+document.addEventListener('mozfullscreenchange', aoMudarFullscreen);
+
+// — Detectar troca de aba / minimizar janela (Page Visibility API) —
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && !atividadeFinalizada) {
+    registrarSaida('trocou de aba ou minimizou a janela');
+    mostrarOverlapBloqueio();
+  }
+});
+
+// — Detectar perda de foco na janela —
+window.addEventListener('blur', () => {
+  if (!atividadeFinalizada) {
+    registrarSaida('perdeu o foco da janela');
+    mostrarOverlapBloqueio();
+  }
+});
+
+// — Bloquear atalhos de teclado perigosos —
+document.addEventListener('keydown', (e) => {
+  if (atividadeFinalizada) return;
+
+  const proibidos = [
+    // Alt+Tab (troca de janela) — só detectável via blur, mas bloquear Alt
+    e.altKey && e.key === 'Tab',
+    // Ctrl+T (nova aba), Ctrl+W (fechar), Ctrl+N (nova janela)
+    e.ctrlKey && ['t','w','n','Tab'].includes(e.key.toLowerCase()),
+    // F1–F12 (ferramentas do navegador, etc.)
+    ['F1','F2','F3','F4','F5','F6','F7','F8','F9','F10','F11','F12'].includes(e.key),
+    // Ctrl+Shift+I (DevTools), Ctrl+Shift+J, Ctrl+U (ver fonte)
+    e.ctrlKey && e.shiftKey && ['i','j','c'].includes(e.key.toLowerCase()),
+    e.ctrlKey && e.key.toLowerCase() === 'u',
+    // Windows key
+    e.key === 'Meta',
+    // PrintScreen
+    e.key === 'PrintScreen',
+  ];
+
+  if (proibidos.some(Boolean)) {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  }
+});
+
+// — Bloquear menu de contexto (botão direito) —
+document.addEventListener('contextmenu', (e) => {
+  if (!atividadeFinalizada) e.preventDefault();
+});
+
+function registrarSaida(motivo) {
+  saidasDetectadas++;
+  document.getElementById('cont-saidas').textContent = saidasDetectadas;
+  document.getElementById('txt-saidas').textContent = saidasDetectadas;
+  document.getElementById('aviso-saidas').classList.add('show');
+  console.warn(`[AVALIAÇÃO] Saída nº ${saidasDetectadas}: ${motivo}`);
+}
+
+function mostrarOverlapBloqueio() {
+  document.getElementById('overlay-bloqueio').classList.add('ativo');
+}
+
+function retornarAtividade() {
+  document.getElementById('overlay-bloqueio').classList.remove('ativo');
+  // Tentar reentrar em fullscreen
+  entrarFullscreen();
+}
+
+// ════════════════════════════════════════════════
+// 👥  LISTA DE ALUNOS
+// ════════════════════════════════════════════════
+const ALUNOS = [
+  // 9º Ano A
+  { nome: "ALICE CARVALHO",                        numero: 1,  serie: "9º Ano A" },
+  { nome: "AMANDA PASSOS DE ALMEIDA",              numero: 2,  serie: "9º Ano A" },
+  { nome: "ANA CLARA SOUSA DA COSTA",              numero: 4,  serie: "9º Ano A" },
+  { nome: "ANA JULIA MENEZES DA SILVA",            numero: 5,  serie: "9º Ano A" },
+  { nome: "ARTHUR COHEN BARRETO",                  numero: 7,  serie: "9º Ano A" },
+  { nome: "ARTHUR DAVI DE SOUZA FERNANDES",        numero: 8,  serie: "9º Ano A" },
+  { nome: "EDUARDA ALVES DE SOUZA",                numero: 10, serie: "9º Ano A" },
+  { nome: "EMANUEL ALVES OLIVEIRA",                numero: 11, serie: "9º Ano A" },
+  { nome: "ESTHER CRISTINE SILVA RIBEIRO",         numero: 12, serie: "9º Ano A" },
+  { nome: "EVELLYN ALVES DA SILVA",                numero: 13, serie: "9º Ano A" },
+  { nome: "EVELLYN YASMIN TAVARES SILVA",          numero: 14, serie: "9º Ano A" },
+  { nome: "FELIPE DE SOUZA RODRIGUES",             numero: 15, serie: "9º Ano A" },
+  { nome: "FERNANDA POLACHINI MAYER GOMES MARQUES",numero: 16, serie: "9º Ano A" },
+  { nome: "GUSTAVO AUGUSTO TOMBOLO REIS",          numero: 17, serie: "9º Ano A" },
+  { nome: "HENRIQUE ROCHA CARVALHAL",              numero: 18, serie: "9º Ano A" },
+  { nome: "HINGRID SARAIVA DOS SANTOS",            numero: 19, serie: "9º Ano A" },
+  { nome: "IGOR MARTINS PEREIRA",                  numero: 20, serie: "9º Ano A" },
+  { nome: "ISABELLA DOS SANTOS SALDANHA",          numero: 21, serie: "9º Ano A" },
+  { nome: "KAUANNY APARECIDA MALAQUIAS LIMA",      numero: 22, serie: "9º Ano A" },
+  { nome: "KÉTHILY NAYARA DA SILVA",               numero: 23, serie: "9º Ano A" },
+  { nome: "LEONARDO DE AVELAR CARVALHO",           numero: 24, serie: "9º Ano A" },
+  { nome: "LIVIA OLIVEIRA NASCIMENTO",             numero: 25, serie: "9º Ano A" },
+  { nome: "LOHRAN ROMUALDO MENDES DA SILVA",       numero: 26, serie: "9º Ano A" },
+  { nome: "LUANA KAROLINE MARTINS DE OLIVEIRA",    numero: 27, serie: "9º Ano A" },
+  { nome: "LUIS MIGUEL GONCALVES DA SILVA",        numero: 28, serie: "9º Ano A" },
+  { nome: "MANUELLA DE MORAES SOUZA",              numero: 29, serie: "9º Ano A" },
+  { nome: "MARCELA ROBERTO DE OLIVEIRA",           numero: 30, serie: "9º Ano A" },
+  { nome: "MATHEUS TURCHETTO",                     numero: 33, serie: "9º Ano A" },
+  { nome: "MELISSA VICTORIA DE OLIVEIRA CARVALHO", numero: 34, serie: "9º Ano A" },
+  { nome: "MIGUEL MARTINS DE ASSIS",               numero: 35, serie: "9º Ano A" },
+  { nome: "OMRAN RASEKH",                          numero: 36, serie: "9º Ano A" },
+  { nome: "PATRICIA SEGURA",                       numero: 37, serie: "9º Ano A" },
+  { nome: "RAUL HENRIQUE CRUS BAPTISTA",           numero: 39, serie: "9º Ano A" },
+  { nome: "SARAH VITORIA ALVES OLIVEIRA",          numero: 40, serie: "9º Ano A" },
+  { nome: "YURI GABRIEL DE MORAES PONGOLINO",      numero: 41, serie: "9º Ano A" },
+  { nome: "ZAYN AL ABIDIN RASULI",                 numero: 42, serie: "9º Ano A" },
+  // 9º Ano B
+  { nome: "ALEJANDRO VIEIRA LIMA",                           numero: 1,  serie: "9º Ano B" },
+  { nome: "ALLAN BEZERRA DE LIMA",                           numero: 2,  serie: "9º Ano B" },
+  { nome: "ANA BEATRIZ RODRIGUES OLIVEIRA",                  numero: 3,  serie: "9º Ano B" },
+  { nome: "ANA CLARA GONCALVES TORRES LOYOLA",               numero: 4,  serie: "9º Ano B" },
+  { nome: "ANNA BEATRIZ SANTIAGO DA SILVA",                  numero: 5,  serie: "9º Ano B" },
+  { nome: "CHRISTOFER FELIPY SANTOS FONSECA",                numero: 8,  serie: "9º Ano B" },
+  { nome: "ELIAS SILVA DE LIMA",                             numero: 9,  serie: "9º Ano B" },
+  { nome: "EVERTON HENRIQUE CARMO RODRIGUES",                numero: 10, serie: "9º Ano B" },
+  { nome: "FABIO HENRIQUE DA SILVA",                         numero: 11, serie: "9º Ano B" },
+  { nome: "GABRIELA VITORIA SEVERA LINS",                    numero: 13, serie: "9º Ano B" },
+  { nome: "JENNYFER VITORIA BASILIO GOMES",                  numero: 16, serie: "9º Ano B" },
+  { nome: "JULIO CESAR ALVES DOS SANTOS",                    numero: 17, serie: "9º Ano B" },
+  { nome: "LEONARDO MENOIA",                                 numero: 19, serie: "9º Ano B" },
+  { nome: "LORENA ALEXANDRE SANTOS DA SILVA",                numero: 20, serie: "9º Ano B" },
+  { nome: "LUAN VENITES BALBINO",                            numero: 21, serie: "9º Ano B" },
+  { nome: "MARIA EDUARDA FELIX DA SILVA",                    numero: 23, serie: "9º Ano B" },
+  { nome: "MUNIQUE CRISTINA LUCAS",                          numero: 24, serie: "9º Ano B" },
+  { nome: "NICOLAS PENTEADO",                                numero: 25, serie: "9º Ano B" },
+  { nome: "NICOLY VITORIA SANTOS DE MENEZES",                numero: 26, serie: "9º Ano B" },
+  { nome: "PAULO CELSO DA COSTA JUNIOR",                     numero: 27, serie: "9º Ano B" },
+  { nome: "PEDRO HENRIQUE CARLOS LIMA",                      numero: 29, serie: "9º Ano B" },
+  { nome: "PEDRO HENRIQUE MORAIS AMORIM",                    numero: 30, serie: "9º Ano B" },
+  { nome: "PEDRO HENRIQUE OLIVEIRA GOMES",                   numero: 31, serie: "9º Ano B" },
+  { nome: "PIETRO RODRIGUES MIRANDA",                        numero: 32, serie: "9º Ano B" },
+  { nome: "RAPHAELLY APARECIDA MARINHO DE OLIVEIRA",         numero: 33, serie: "9º Ano B" },
+  { nome: "RENAN LEANDRO RODRIGUES VICENTE",                 numero: 35, serie: "9º Ano B" },
+  { nome: "RENATO SOUZA SANTOS",                             numero: 36, serie: "9º Ano B" },
+  { nome: "RODOLFO RAFAEL GOLZENLEUCHTER MORENO JUNIOR",     numero: 37, serie: "9º Ano B" },
+  { nome: "SOPHIA MENEZES DE ARAUJO",                        numero: 38, serie: "9º Ano B" },
+  { nome: "THAYNA SEABRA DE OLIVEIRA DO NASCIMENTO",         numero: 40, serie: "9º Ano B" },
+  { nome: "VITORIA MENEZES BRANDAO",                         numero: 41, serie: "9º Ano B" },
+  { nome: "WENDELL RAFAEL DE JESUS LESSA",                   numero: 42, serie: "9º Ano B" },
+  { nome: "WILHAN KENJI ANTONIO",                            numero: 43, serie: "9º Ano B" },
+];
+
+// ════════════════════════════════════════════════
+// 📋  LÓGICA DA ATIVIDADE
+// ════════════════════════════════════════════════
+let submetido = false;
+let notaME = 0;
+let feedbacksIA = {};
+
+function preencherCampos() {
+  const idx = document.getElementById('sel-nome').value;
+  const numEl = document.getElementById('inp-numero');
+  const serEl = document.getElementById('inp-serie');
+  if (idx === '') {
+    numEl.value = '';
+    serEl.value = '';
+  } else {
+    const al = ALUNOS[parseInt(idx)];
+    numEl.value = al.numero;
+    serEl.value = al.serie;
+  }
+}
+
+function selecionarAlternativa(el, qNum) {
+  if (submetido) return;
+  const qs = el.closest('.questao');
+  qs.querySelectorAll('.alternativa').forEach(a => a.classList.remove('selecionada'));
+  el.classList.add('selecionada');
+  el.querySelector('input[type=radio]').checked = true;
+  atualizarProgresso();
+}
+
+function contarCaracteres(el, cntId) {
+  document.getElementById(cntId).textContent = el.value.length + ' caracteres';
+}
+
+function atualizarProgresso() {
+  let resp = 0;
+  [1,3,5,7,9].forEach(q => {
+    if (document.querySelector(`input[name="q${q}"]:checked`)) resp++;
+  });
+  [2,4,6,8,10].forEach(q => {
+    const t = document.getElementById(`r${q}`);
+    if (t && t.value.trim().length > 20) resp++;
+  });
+  const pct = (resp / 10) * 100;
+  document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('prog-txt').textContent = resp + ' de 10 respondidas';
+}
+
+// ─── AUTOCORREÇÃO ME ───
+function corrigirME() {
+  let acertos = 0;
+  const acertoCols = [1,3,5,7,9];
+  acertoCols.forEach(q => {
+    const sel = document.querySelector(`input[name="q${q}"]:checked`);
+    const gabarito = GABARITOS[q];
+    const qs = document.querySelector(`[data-q="${q}"]`);
+    const fme = document.getElementById(`fbme-${q}`);
+
+    qs.querySelectorAll('.alternativa').forEach(alt => {
+      const val = alt.querySelector('input').value;
+      if (val === gabarito) alt.classList.add('gabarito');
+    });
+
+    if (sel) {
+      const escolha = sel.value;
+      const altEl = sel.closest('.alternativa');
+      if (escolha === gabarito) {
+        altEl.classList.add('correta');
+        altEl.classList.remove('selecionada');
+        acertos++;
+        fme.textContent = '✅ Correto!';
+        fme.style.color = 'var(--acerto)';
+      } else {
+        altEl.classList.add('errada');
+        altEl.classList.remove('selecionada');
+        fme.textContent = `❌ Incorreto. Resposta correta: ${gabarito}`;
+        fme.style.color = 'var(--erro)';
+      }
+      fme.style.display = 'block';
+    } else {
+      fme.textContent = '⚠️ Não respondida – resposta correta: ' + gabarito;
+      fme.style.color = 'var(--cinza)';
+      fme.style.display = 'block';
+    }
+    qs.querySelectorAll('.alternativa').forEach(a => a.style.pointerEvents = 'none');
+  });
+  return acertos;
+}
+
+// ─── CORREÇÃO IA (DISCURSIVAS) ───
+async function corrigirDiscursivasIA() {
+  const perguntas = {
+    2: {
+      pergunta: "Descreva as três partes que compõem cada nucleotídeo e explique por que a sequência de bases nitrogenadas é considerada o 'código da vida'.",
+      gabarito_esperado: "Nucleotídeo: grupo fosfato, pentose (desoxirribose), base nitrogenada (A, T, C, G). A sequência de bases nitrogenadas codifica as informações para síntese de proteínas."
+    },
+    4: {
+      pergunta: "Qual foi a contribuição de Rosalind Franklin para a ciência? Por que é importante reconhecer o papel de todas as pessoas na construção do conhecimento científico?",
+      gabarito_esperado: "Franklin descobriu a estrutura em dupla-hélice do DNA por cristalografia de raios-X. Watson e Crick usaram seus dados sem crédito. Reconhecimento é essencial para equidade e ética científica."
+    },
+    6: {
+      pergunta: "Explique a diferença entre células haploides e diploides, cite exemplos e explique a importância para a reprodução.",
+      gabarito_esperado: "Haploides (n): gametas (óvulo e espermatozoide) com 23 cromossomos. Diploides (2n): demais células com 46 cromossomos. Na fecundação, n+n=2n, mantendo o número correto da espécie."
+    },
+    8: {
+      pergunta: "Como células com o mesmo DNA desempenham funções tão distintas? Explique o papel dos genes, eucromatina e heterocromatina na diferenciação celular.",
+      gabarito_esperado: "Células com mesmo DNA têm genes diferentes ativados/inativos. Eucromatina (menos compactada) = genes ativos. Heterocromatina (mais compactada) = genes inativos. Controle da expressão gênica determina função celular."
+    },
+    10: {
+      pergunta: "Descreva a hierarquia de estruturas cromossômicas em ordem crescente de compactação, desde o nucleotídeo até o cromossomo.",
+      gabarito_esperado: "Nucleotídeo (unidade básica) → DNA (dupla-hélice) → nucleossomo (DNA+histonas) → fibra de cromatina → cromossomo (máxima compactação na divisão celular). Cada nível protege e organiza o material genético."
+    }
+  };
+
+  const promises = [2,4,6,8,10].map(async (q) => {
+    const resposta = document.getElementById(`r${q}`)?.value?.trim() || '';
+    const fb = document.getElementById(`fb${q}`);
+    if (!resposta || resposta.length < 10) {
+      fb.className = 'feedback-ia erro';
+      fb.innerHTML = '<span class="feedback-icone">⚠️</span> Questão não respondida.';
+      fb.style.display = 'block';
+      feedbacksIA[q] = 'Não respondida';
+      return;
+    }
+    fb.className = 'feedback-ia loading';
+    fb.innerHTML = '<span class="spin"></span> Corrigindo com IA...';
+    fb.style.display = 'block';
+
+    const pq = perguntas[q];
+    const prompt = `Você é um professor de Ciências do 9º ano do Ensino Fundamental (SEDUC-SP). Corrija a resposta do aluno com base na pergunta e no gabarito esperado. Seja encorajador e pedagógico.
+
+PERGUNTA: ${pq.pergunta}
+GABARITO ESPERADO: ${pq.gabarito_esperado}
+RESPOSTA DO ALUNO: ${resposta}
+
+Responda em JSON válido com os campos:
+{
+  "nivel": "acerto" | "parcial" | "erro",
+  "comentario": "Feedback construtivo de 2 a 4 frases em português, sem repetir a pergunta, explicando o que foi bem e o que pode melhorar."
+}
+Responda APENAS o JSON, sem mais nada.`;
+
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+      const data = await res.json();
+      const txt = (data.content || []).map(c => c.text || '').join('').trim();
+      const clean = txt.replace(/```json|```/g, '').trim();
+      const parsed = JSON.parse(clean);
+      const nivel = parsed.nivel || 'parcial';
+      const icone = nivel === 'acerto' ? '✅' : nivel === 'parcial' ? '⚠️' : '❌';
+      fb.className = `feedback-ia ${nivel}`;
+      fb.innerHTML = `<span class="feedback-icone">${icone}</span>${parsed.comentario}`;
+      feedbacksIA[q] = `${nivel}: ${parsed.comentario}`;
+    } catch (e) {
+      fb.className = 'feedback-ia parcial';
+      fb.innerHTML = '⚠️ Não foi possível obter correção automática. O professor irá avaliar sua resposta.';
+      feedbacksIA[q] = 'Erro na correção automática';
+    }
+  });
+
+  await Promise.all(promises);
+}
+
+// ─── ENVIAR PARA GOOGLE SHEETS via GAS ───
+async function enviarParaSheets(dados) {
+  try {
+    await fetch(GAS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dados)
+    });
+    return true;
+  } catch (e) {
+    console.error('Erro ao enviar para Sheets:', e);
+    return false;
+  }
+}
+
+// ─── ENVIAR ATIVIDADE ───
+async function enviarAtividade() {
+  if (submetido) return;
+
+  const idxNome = document.getElementById('sel-nome').value;
+  const numero  = document.getElementById('inp-numero').value;
+  const serie   = document.getElementById('inp-serie').value;
+  const data    = document.getElementById('inp-data').value;
+  const nome    = idxNome !== '' ? ALUNOS[parseInt(idxNome)].nome : '';
+
+  const aviso  = document.getElementById('aviso-campos');
+  const aviso2 = document.getElementById('aviso-campos2');
+
+  if (!nome || !data) {
+    aviso.classList.add('show');
+    aviso2.classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+  aviso.classList.remove('show');
+  aviso2.classList.remove('show');
+
+  submetido = true;
+  atividadeFinalizada = true; // Liberar blur/visibilidade após envio
+
+  const btn = document.getElementById('btn-enviar');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Processando...';
+
+  // 1. Autocorrigir ME
+  notaME = corrigirME();
+
+  // 2. Corrigir discursivas com IA
+  const status = document.getElementById('status-envio');
+  status.style.display = 'block';
+  status.className = 'status-envio';
+  status.innerHTML = '<span class="spin"></span> Corrigindo questões discursivas com IA...';
+
+  await corrigirDiscursivasIA();
+
+  // 3. Montar dados para planilha (estrutura exata esperada pelo GAS)
+  const respostas = {};
+  [1,3,5,7,9].forEach(q => {
+    const sel = document.querySelector(`input[name="q${q}"]:checked`);
+    respostas[`Q${q}_ME`]       = sel ? sel.value : '—';
+    respostas[`Q${q}_Gabarito`] = GABARITOS[q];
+    respostas[`Q${q}_Acerto`]   = sel && sel.value === GABARITOS[q] ? 'SIM' : 'NÃO';
+  });
+  [2,4,6,8,10].forEach(q => {
+    respostas[`Q${q}_Discursiva`]  = document.getElementById(`r${q}`)?.value?.trim() || '';
+    respostas[`Q${q}_FeedbackIA`]  = feedbacksIA[q] || '';
+  });
+
+  const dados = {
+    timestamp:     new Date().toLocaleString('pt-BR'),
+    numero,
+    nome,
+    serie,
+    data,
+    notaME:        `${notaME}/5`,
+    saidasTela:    saidasDetectadas,  // Campo extra: número de saídas registradas
+    Q1_ME:         respostas.Q1_ME,       Q1_Gabarito: respostas.Q1_Gabarito, Q1_Acerto: respostas.Q1_Acerto,
+    Q3_ME:         respostas.Q3_ME,       Q3_Gabarito: respostas.Q3_Gabarito, Q3_Acerto: respostas.Q3_Acerto,
+    Q5_ME:         respostas.Q5_ME,       Q5_Gabarito: respostas.Q5_Gabarito, Q5_Acerto: respostas.Q5_Acerto,
+    Q7_ME:         respostas.Q7_ME,       Q7_Gabarito: respostas.Q7_Gabarito, Q7_Acerto: respostas.Q7_Acerto,
+    Q9_ME:         respostas.Q9_ME,       Q9_Gabarito: respostas.Q9_Gabarito, Q9_Acerto: respostas.Q9_Acerto,
+    Q2_Discursiva: respostas.Q2_Discursiva, Q2_FeedbackIA: respostas.Q2_FeedbackIA,
+    Q4_Discursiva: respostas.Q4_Discursiva, Q4_FeedbackIA: respostas.Q4_FeedbackIA,
+    Q6_Discursiva: respostas.Q6_Discursiva, Q6_FeedbackIA: respostas.Q6_FeedbackIA,
+    Q8_Discursiva: respostas.Q8_Discursiva, Q8_FeedbackIA: respostas.Q8_FeedbackIA,
+    Q10_Discursiva:respostas.Q10_Discursiva,Q10_FeedbackIA:respostas.Q10_FeedbackIA,
+  };
+
+  // 4. Enviar para Sheets
+  status.innerHTML = '<span class="spin"></span> Enviando para a planilha...';
+  const ok = await enviarParaSheets(dados);
+
+  // 5. Mostrar resultado
+  document.getElementById('resultado-nota').textContent = `${notaME}/5`;
+  document.getElementById('resultado-detalhe').textContent =
+    `Questões objetivas: ${notaME} acerto(s) de 5. As questões discursivas foram encaminhadas para avaliação do professor.`;
+  document.getElementById('resultado-box').classList.add('show');
+
+  if (ok) {
+    status.className = 'status-envio ok';
+    status.innerHTML = '✅ Respostas registradas com sucesso na planilha do professor!';
+  } else {
+    status.className = 'status-envio err';
+    status.innerHTML = '⚠️ Não foi possível conectar à planilha. Informe o professor.';
+  }
+
+  btn.innerHTML = '✅ Atividade Enviada';
+  document.querySelectorAll('textarea').forEach(t => t.disabled = true);
+
+  // Sair do fullscreen suavemente após conclusão
+  if (document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+
+  window.scrollTo({ top: document.getElementById('resultado-box').offsetTop - 20, behavior: 'smooth' });
+}
+
+function limparTudo() {
+  if (!confirm('Deseja realmente recomeçar? Todas as respostas serão apagadas.')) return;
+  location.reload();
+}
+
+// ════════════════════════════════════════════════
+// 🚀  INICIALIZAÇÃO
+// ════════════════════════════════════════════════
+(function init() {
+  // Popular dropdown de alunos
+  const sel = document.getElementById('sel-nome');
+  ALUNOS.forEach((al, idx) => {
+    const o = document.createElement('option');
+    o.value = idx;
+    o.textContent = `${al.nome} (${al.serie})`;
+    sel.appendChild(o);
+  });
+
+  // Máscara de data
+  const inp = document.getElementById('inp-data');
+  inp.addEventListener('input', function() {
+    let v = inp.value.replace(/\D/g,'');
+    if (v.length > 2) v = v.slice(0,2)+'/'+v.slice(2);
+    if (v.length > 5) v = v.slice(0,5)+'/'+v.slice(5,9);
+    inp.value = v;
+  });
+  const hoje = new Date();
+  const d = String(hoje.getDate()).padStart(2,'0');
+  const m = String(hoje.getMonth()+1).padStart(2,'0');
+  const a = hoje.getFullYear();
+  inp.value = `${d}/${m}/${a}`;
+
+  // Mostrar overlay de fullscreen ao abrir
+  document.getElementById('overlay-fullscreen').classList.add('ativo');
+})();
+</script>
+</body>
+</html>
