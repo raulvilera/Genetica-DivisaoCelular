@@ -444,57 +444,85 @@
 </div>
 
 <script>
-  // ==================== CONFIGURAÇÃO ====================
-  // ⚠️ SUBSTITUA PELA URL DO SEU GOOGLE APPS SCRIPT DEPLOYADO
   const GAS_URL = "https://script.google.com/macros/s/AKfycbyERmYA0s2pKTrz47WrXoP52JVcfZL0pnJwyTwBdC_rpfzi5e3xx24pXfZTSUnAEuZB/exec";
-  
   const GABARITOS = { 1:"B", 3:"C", 5:"A", 7:"D", 9:"B" };
-  
+
   const ALUNOS = [
-    { nome: "ALICE CARVALHO", numero: 1, serie: "9º Ano A" },
-    { nome: "AMANDA PASSOS DE ALMEIDA", numero: 2, serie: "9º Ano A" },
-    { nome: "ANA CLARA SOUSA DA COSTA", numero: 4, serie: "9º Ano A" },
-    { nome: "ANA JULIA MENEZES DA SILVA", numero: 5, serie: "9º Ano A" },
-    { nome: "ARTHUR COHEN BARRETO", numero: 7, serie: "9º Ano A" },
-    { nome: "ARTHUR DAVI DE SOUZA FERNANDES", numero: 8, serie: "9º Ano A" },
-    { nome: "EDUARDA ALVES DE SOUZA", numero: 10, serie: "9º Ano A" },
-    { nome: "EMANUEL ALVES OLIVEIRA", numero: 11, serie: "9º Ano A" },
-    { nome: "ESTHER CRISTINE SILVA RIBEIRO", numero: 12, serie: "9º Ano A" },
-    { nome: "EVELLYN ALVES DA SILVA", numero: 13, serie: "9º Ano A" },
-    { nome: "EVELLYN YASMIN TAVARES SILVA", numero: 14, serie: "9º Ano A" },
-    { nome: "FELIPE DE SOUZA RODRIGUES", numero: 15, serie: "9º Ano A" },
-    { nome: "FERNANDA POLACHINI MAYER GOMES MARQUES", numero: 16, serie: "9º Ano A" },
-    { nome: "GUSTAVO AUGUSTO TOMBOLO REIS", numero: 17, serie: "9º Ano A" },
-    { nome: "HENRIQUE ROCHA CARVALHAL", numero: 18, serie: "9º Ano A" },
-    { nome: "HINGRID SARAIVA DOS SANTOS", numero: 19, serie: "9º Ano A" },
-    { nome: "IGOR MARTINS PEREIRA", numero: 20, serie: "9º Ano A" },
-    { nome: "ISABELLA DOS SANTOS SALDANHA", numero: 21, serie: "9º Ano A" },
-    { nome: "KAUANNY APARECIDA MALAQUIAS LIMA", numero: 22, serie: "9º Ano A" },
-    { nome: "KÉTHILY NAYARA DA SILVA", numero: 23, serie: "9º Ano A" },
-    { nome: "LEONARDO DE AVELAR CARVALHO", numero: 24, serie: "9º Ano A" },
-    { nome: "LIVIA OLIVEIRA NASCIMENTO", numero: 25, serie: "9º Ano A" },
-    { nome: "LOHRAN ROMUALDO MENDES DA SILVA", numero: 26, serie: "9º Ano A" },
-    { nome: "LUANA KAROLINE MARTINS DE OLIVEIRA", numero: 27, serie: "9º Ano A" },
-    { nome: "LUIS MIGUEL GONCALVES DA SILVA", numero: 28, serie: "9º Ano A" },
-    { nome: "MANUELLA DE MORAES SOUZA", numero: 29, serie: "9º Ano A" },
-    { nome: "MARCELA ROBERTO DE OLIVEIRA", numero: 30, serie: "9º Ano A" },
-    { nome: "MATHEUS TURCHETTO", numero: 33, serie: "9º Ano A" },
-    { nome: "MELISSA VICTORIA DE OLIVEIRA CARVALHO", numero: 34, serie: "9º Ano A" },
-    { nome: "MIGUEL MARTINS DE ASSIS", numero: 35, serie: "9º Ano A" },
-    { nome: "OMRAN RASEKH", numero: 36, serie: "9º Ano A" },
-    { nome: "PATRICIA SEGURA", numero: 37, serie: "9º Ano A" },
-    { nome: "RAUL HENRIQUE CRUS BAPTISTA", numero: 39, serie: "9º Ano A" },
-    { nome: "SARAH VITORIA ALVES OLIVEIRA", numero: 40, serie: "9º Ano A" },
-    { nome: "YURI GABRIEL DE MORAES PONGOLINO", numero: 41, serie: "9º Ano A" },
-    { nome: "ZAYN AL ABIDIN RASULI", numero: 42, serie: "9º Ano A" },
-    { nome: "ALEJANDRO VIEIRA LIMA", numero: 1, serie: "9º Ano B" },
-    { nome: "ALLAN BEZERRA DE LIMA", numero: 2, serie: "9º Ano B" }
+    // 9º Ano A
+    { nome: "ALICE CARVALHO", numero: 1, serie: "9\u00ba Ano A" },
+    { nome: "AMANDA PASSOS DE ALMEIDA", numero: 2, serie: "9\u00ba Ano A" },
+    { nome: "ANA CLARA SOUSA DA COSTA", numero: 4, serie: "9\u00ba Ano A" },
+    { nome: "ANA JULIA MENEZES DA SILVA", numero: 5, serie: "9\u00ba Ano A" },
+    { nome: "ARTHUR COHEN BARRETO", numero: 7, serie: "9\u00ba Ano A" },
+    { nome: "ARTHUR DAVI DE SOUZA FERNANDES", numero: 8, serie: "9\u00ba Ano A" },
+    { nome: "EDUARDA ALVES DE SOUZA", numero: 10, serie: "9\u00ba Ano A" },
+    { nome: "EMANUEL ALVES OLIVEIRA", numero: 11, serie: "9\u00ba Ano A" },
+    { nome: "ESTHER CRISTINE SILVA RIBEIRO", numero: 12, serie: "9\u00ba Ano A" },
+    { nome: "EVELLYN ALVES DA SILVA", numero: 13, serie: "9\u00ba Ano A" },
+    { nome: "EVELLYN YASMIN TAVARES SILVA", numero: 14, serie: "9\u00ba Ano A" },
+    { nome: "FELIPE DE SOUZA RODRIGUES", numero: 15, serie: "9\u00ba Ano A" },
+    { nome: "FERNANDA POLACHINI MAYER GOMES MARQUES", numero: 16, serie: "9\u00ba Ano A" },
+    { nome: "GUSTAVO AUGUSTO TOMBOLO REIS", numero: 17, serie: "9\u00ba Ano A" },
+    { nome: "HENRIQUE ROCHA CARVALHAL", numero: 18, serie: "9\u00ba Ano A" },
+    { nome: "HINGRID SARAIVA DOS SANTOS", numero: 19, serie: "9\u00ba Ano A" },
+    { nome: "IGOR MARTINS PEREIRA", numero: 20, serie: "9\u00ba Ano A" },
+    { nome: "ISABELLA DOS SANTOS SALDANHA", numero: 21, serie: "9\u00ba Ano A" },
+    { nome: "KAUANNY APARECIDA MALAQUIAS LIMA", numero: 22, serie: "9\u00ba Ano A" },
+    { nome: "K\u00c9THILY NAYARA DA SILVA", numero: 23, serie: "9\u00ba Ano A" },
+    { nome: "LEONARDO DE AVELAR CARVALHO", numero: 24, serie: "9\u00ba Ano A" },
+    { nome: "LIVIA OLIVEIRA NASCIMENTO", numero: 25, serie: "9\u00ba Ano A" },
+    { nome: "LOHRAN ROMUALDO MENDES DA SILVA", numero: 26, serie: "9\u00ba Ano A" },
+    { nome: "LUANA KAROLINE MARTINS DE OLIVEIRA", numero: 27, serie: "9\u00ba Ano A" },
+    { nome: "LUIS MIGUEL GONCALVES DA SILVA", numero: 28, serie: "9\u00ba Ano A" },
+    { nome: "MANUELLA DE MORAES SOUZA", numero: 29, serie: "9\u00ba Ano A" },
+    { nome: "MARCELA ROBERTO DE OLIVEIRA", numero: 30, serie: "9\u00ba Ano A" },
+    { nome: "MATHEUS TURCHETTO", numero: 33, serie: "9\u00ba Ano A" },
+    { nome: "MELISSA VICTORIA DE OLIVEIRA CARVALHO", numero: 34, serie: "9\u00ba Ano A" },
+    { nome: "MIGUEL MARTINS DE ASSIS", numero: 35, serie: "9\u00ba Ano A" },
+    { nome: "OMRAN RASEKH", numero: 36, serie: "9\u00ba Ano A" },
+    { nome: "PATRICIA SEGURA", numero: 37, serie: "9\u00ba Ano A" },
+    { nome: "RAUL HENRIQUE CRUS BAPTISTA", numero: 39, serie: "9\u00ba Ano A" },
+    { nome: "SARAH VITORIA ALVES OLIVEIRA", numero: 40, serie: "9\u00ba Ano A" },
+    { nome: "YURI GABRIEL DE MORAES PONGOLINO", numero: 41, serie: "9\u00ba Ano A" },
+    { nome: "ZAYN AL ABIDIN RASULI", numero: 42, serie: "9\u00ba Ano A" },
+    // 9º Ano B
+    { nome: "ALEJANDRO VIEIRA LIMA", numero: 1, serie: "9\u00ba Ano B" },
+    { nome: "ALLAN BEZERRA DE LIMA", numero: 2, serie: "9\u00ba Ano B" },
+    { nome: "ANA BEATRIZ RODRIGUES OLIVEIRA", numero: 3, serie: "9\u00ba Ano B" },
+    { nome: "ANA CLARA GONCALVES TORRES LOYOLA", numero: 4, serie: "9\u00ba Ano B" },
+    { nome: "ANNA BEATRIZ SANTIAGO DA SILVA", numero: 5, serie: "9\u00ba Ano B" },
+    { nome: "CHRISTOFER FELIPY SANTOS FONSECA", numero: 8, serie: "9\u00ba Ano B" },
+    { nome: "ELIAS SILVA DE LIMA", numero: 9, serie: "9\u00ba Ano B" },
+    { nome: "EVERTON HENRIQUE CARMO RODRIGUES", numero: 10, serie: "9\u00ba Ano B" },
+    { nome: "FABIO HENRIQUE DA SILVA", numero: 11, serie: "9\u00ba Ano B" },
+    { nome: "GABRIELA VITORIA SEVERA LINS", numero: 13, serie: "9\u00ba Ano B" },
+    { nome: "JENNYFER VITORIA BASILIO GOMES", numero: 16, serie: "9\u00ba Ano B" },
+    { nome: "JULIO CESAR ALVES DOS SANTOS", numero: 17, serie: "9\u00ba Ano B" },
+    { nome: "LORENA ALEXANDRE SANTOS DA SILVA", numero: 20, serie: "9\u00ba Ano B" },
+    { nome: "LUAN VENITES BALBINO", numero: 21, serie: "9\u00ba Ano B" },
+    { nome: "MUNIQUE CRISTINA LUCAS", numero: 24, serie: "9\u00ba Ano B" },
+    { nome: "NICOLAS PENTEADO", numero: 25, serie: "9\u00ba Ano B" },
+    { nome: "NICOLY VITORIA SANTOS DE MENEZES", numero: 26, serie: "9\u00ba Ano B" },
+    { nome: "PAULO CELSO DA COSTA JUNIOR", numero: 27, serie: "9\u00ba Ano B" },
+    { nome: "PEDRO HENRIQUE CARLOS LIMA", numero: 29, serie: "9\u00ba Ano B" },
+    { nome: "PEDRO HENRIQUE MORAIS AMORIM", numero: 30, serie: "9\u00ba Ano B" },
+    { nome: "PEDRO HENRIQUE OLIVEIRA GOMES", numero: 31, serie: "9\u00ba Ano B" },
+    { nome: "PIETRO RODRIGUES MIRANDA", numero: 32, serie: "9\u00ba Ano B" },
+    { nome: "RAPHAELLY APARECIDA MARINHO DE OLIVEIRA", numero: 33, serie: "9\u00ba Ano B" },
+    { nome: "RENAN LEANDRO RODRIGUES VICENTE", numero: 35, serie: "9\u00ba Ano B" },
+    { nome: "RENATO SOUZA SANTOS", numero: 36, serie: "9\u00ba Ano B" },
+    { nome: "RODOLFO RAFAEL GOLZENLEUCHTER MORENO JUNIOR", numero: 37, serie: "9\u00ba Ano B" },
+    { nome: "SOPHIA MENEZES DE ARAUJO", numero: 38, serie: "9\u00ba Ano B" },
+    { nome: "THAYNA SEABRA DE OLIVEIRA DO NASCIMENTO", numero: 40, serie: "9\u00ba Ano B" },
+    { nome: "VITORIA MENEZES BRANDAO", numero: 41, serie: "9\u00ba Ano B" },
+    { nome: "WENDELL RAFAEL DE JESUS LESSA", numero: 42, serie: "9\u00ba Ano B" },
+    { nome: "WILHAN KENJI ANTONIO", numero: 43, serie: "9\u00ba Ano B" },
+    { nome: "ALYSON DANIEL OLIVEIRA HERCULE", numero: 44, serie: "9\u00ba Ano B" }
   ];
 
   let saidasDetectadas = 0, atividadeFinalizada = false, fullscreenAtivo = false, submetido = false;
   let notaME = 0;
 
-  // ==================== FUNÇÕES ====================
   function preencherCampos() {
     const idx = document.getElementById('sel-nome').value;
     if (idx !== '') {
@@ -587,124 +615,74 @@
     entrarFullscreen();
   }
 
-  // ==================== ENVIO PARA GOOGLE SHEETS ====================
   async function enviarAtividade() {
-    if (submetido) {
-      alert('⏳ Atividade já foi enviada!');
-      return;
-    }
+    if (submetido) { alert('A atividade ja foi enviada!'); return; }
 
-    // Validações
     const selNome = document.getElementById('sel-nome');
     const data = document.getElementById('inp-data').value.trim();
-    
+
     if (selNome.value === '') {
       document.getElementById('aviso-campos').style.display = 'block';
-      selNome.focus();
-      return;
+      selNome.focus(); return;
     }
-    
     if (data === '') {
       document.getElementById('aviso-campos').style.display = 'block';
-      document.getElementById('inp-data').focus();
-      return;
+      document.getElementById('inp-data').focus(); return;
     }
-    
     document.getElementById('aviso-campos').style.display = 'none';
 
-    // Confirmação
-    if (!confirm('📝 Confirma o envio da atividade?\n\nApós o envio, não será possível alterar as respostas.')) {
-      return;
-    }
+    if (!confirm('Confirma o envio da atividade?\n\nApos o envio, nao sera possivel alterar as respostas.')) return;
 
     submetido = true;
     atividadeFinalizada = true;
     document.getElementById('btn-enviar').disabled = true;
 
-    // Mostrar status de carregamento
     const statusEl = document.getElementById('status-envio');
     statusEl.className = 'status-envio carregando';
-    statusEl.textContent = '⏳ Enviando respostas para a planilha...';
+    statusEl.textContent = 'Enviando respostas para a planilha...';
 
-    // Coletar dados
     const aluno = ALUNOS[parseInt(selNome.value)];
-    const nome = aluno.nome;
-    const numero = aluno.numero;
-    const serie = aluno.serie;
-
-    // Respostas ME
     const respostasME = {};
     [1,3,5,7,9].forEach(q => {
       const sel = document.querySelector(`input[name="q${q}"]:checked`);
-      respostasME[q] = sel ? sel.value : 'Não respondida';
+      respostasME[q] = sel ? sel.value : 'Nao respondida';
     });
-
-    // Respostas discursivas
     const respostasDisc = {};
     [2,4,6,8,10].forEach(q => {
       const t = document.getElementById(`r${q}`);
       respostasDisc[q] = t ? t.value.trim() : '';
     });
 
-    // Calcular nota
     notaME = 0;
-    [1,3,5,7,9].forEach(q => {
-      if (respostasME[q] === GABARITOS[q]) notaME++;
-    });
+    [1,3,5,7,9].forEach(q => { if (respostasME[q] === GABARITOS[q]) notaME++; });
 
-    // Preparar payload
     const payload = {
-      nome: nome,
-      numero: numero,
-      serie: serie,
-      data: data,
-      q1: respostasME[1],
-      q2: respostasDisc[2],
-      q3: respostasME[3],
-      q4: respostasDisc[4],
-      q5: respostasME[5],
-      q6: respostasDisc[6],
-      q7: respostasME[7],
-      q8: respostasDisc[8],
-      q9: respostasME[9],
-      q10: respostasDisc[10],
-      notaME: notaME,
-      saidas: saidasDetectadas
+      nome: aluno.nome, numero: aluno.numero, serie: aluno.serie, data,
+      q1: respostasME[1], q2: respostasDisc[2],
+      q3: respostasME[3], q4: respostasDisc[4],
+      q5: respostasME[5], q6: respostasDisc[6],
+      q7: respostasME[7], q8: respostasDisc[8],
+      q9: respostasME[9], q10: respostasDisc[10],
+      notaME, saidas: saidasDetectadas
     };
 
-    console.log('📤 Enviando payload:', payload);
-
     try {
-      const response = await fetch(GAS_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(payload).toString()
       });
-
-      // Como mode:'no-cors' não retorna resposta legível, consideramos sucesso
-      // se não houver exceção
-      
-      // Mostrar resultado
       document.getElementById('resultado-nota').textContent = `${notaME}/5`;
       document.getElementById('resultado-box').classList.add('show');
-      document.querySelector('.resultado-detalhe').textContent = 
-        `Nome: ${nome} | Nº ${numero} | ${serie}`;
-      
+      document.querySelector('.resultado-detalhe').textContent =
+        `Nome: ${aluno.nome} | N\u00ba ${aluno.numero} | ${aluno.serie}`;
       statusEl.className = 'status-envio sucesso';
-      statusEl.textContent = '✅ Atividade enviada com sucesso! As respostas foram registradas na planilha.';
-      
-      // Scroll até o resultado
+      statusEl.textContent = 'Atividade enviada com sucesso! As respostas foram registradas na planilha.';
       document.getElementById('resultado-box').scrollIntoView({ behavior: 'smooth' });
-
     } catch (erro) {
-      console.error('❌ Erro no envio:', erro);
+      console.error('Erro no envio:', erro);
       statusEl.className = 'status-envio erro';
-      statusEl.textContent = '❌ Erro ao enviar! Verifique sua conexão e tente novamente. Se o erro persistir, contate o professor.';
-      
-      // Permitir reenvio em caso de erro
+      statusEl.textContent = 'Erro ao enviar! Verifique sua conexao e tente novamente.';
       submetido = false;
       atividadeFinalizada = false;
       document.getElementById('btn-enviar').disabled = false;
@@ -712,7 +690,7 @@
   }
 
   function limparTudo() {
-    if (confirm('Tem certeza que deseja recomeçar? Todos os dados serão apagados.')) {
+    if (confirm('Tem certeza que deseja recomecar? Todos os dados serao apagados.')) {
       document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
       document.querySelectorAll('.alternativa').forEach(a => a.classList.remove('selecionada'));
       document.querySelectorAll('textarea').forEach(t => t.value = '');
@@ -722,14 +700,11 @@
       document.getElementById('prog-txt').textContent = '0 de 10 respondidas';
       document.getElementById('status-envio').className = 'status-envio';
       document.getElementById('status-envio').textContent = '';
-      submetido = false;
-      atividadeFinalizada = false;
-      notaME = 0;
+      submetido = false; atividadeFinalizada = false; notaME = 0;
       document.getElementById('btn-enviar').disabled = false;
     }
   }
 
-  // Inicialização
   window.addEventListener('load', () => {
     const sel = document.getElementById('sel-nome');
     ALUNOS.forEach((al, idx) => {
@@ -739,13 +714,10 @@
       sel.appendChild(o);
     });
     document.getElementById('overlay-fullscreen').classList.add('ativo');
-    
-    // Preencher data automaticamente
     const hoje = new Date();
     const dia = String(hoje.getDate()).padStart(2, '0');
     const mes = String(hoje.getMonth() + 1).padStart(2, '0');
-    const ano = hoje.getFullYear();
-    document.getElementById('inp-data').value = `${dia}/${mes}/${ano}`;
+    document.getElementById('inp-data').value = `${dia}/${mes}/${hoje.getFullYear()}`;
   });
 </script>
 </body>
