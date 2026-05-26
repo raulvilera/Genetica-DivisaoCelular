@@ -214,39 +214,40 @@
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: .9rem; background: white; color: #1a4b6e; transition: 0.15s;
   }
-  /* Alternativa selecionada – azul (padrão / questões ímpares: 1, 5, 9) */
-  .alternativa.selecionada {
+  /* Alternativa selecionada – azul */
+  .alternativa.sel-azul {
     background: linear-gradient(120deg, #0a3352, #1a5276) !important;
     border-color: #3fc3e0 !important;
     color: white !important; font-weight: 700 !important;
     box-shadow: 0 0 0 3px rgba(63,195,224,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
     animation: pulse-azul 1.6s ease-in-out infinite;
   }
-  .alternativa.selecionada .letra {
+  .alternativa.sel-azul .letra {
     background: #3fc3e0; border-color: #3fc3e0; color: #0a2e44; font-weight: 800;
   }
-  .alternativa.selecionada span { color: white; font-weight: 700; }
+  .alternativa.sel-azul span { color: white; font-weight: 700; }
 
   @keyframes pulse-azul {
     0%,100% { box-shadow: 0 0 0 3px rgba(63,195,224,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
-    50%      { box-shadow: 0 0 0 6px rgba(63,195,224,0.15), inset 0 1px 0 rgba(255,255,255,0.15); }
+    50%      { box-shadow: 0 0 0 7px rgba(63,195,224,0.12), inset 0 1px 0 rgba(255,255,255,0.15); }
   }
 
-  /* Alternativa selecionada – verde (questões 3 e 7) */
-  .questao-verde .alternativa.selecionada {
+  /* Alternativa selecionada – verde */
+  .alternativa.sel-verde {
     background: linear-gradient(120deg, #0a3d2a, #1a6644) !important;
     border-color: #2ecc71 !important;
     color: white !important; font-weight: 700 !important;
     box-shadow: 0 0 0 3px rgba(46,204,113,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
     animation: pulse-verde 1.6s ease-in-out infinite;
   }
-  .questao-verde .alternativa.selecionada .letra {
+  .alternativa.sel-verde .letra {
     background: #2ecc71; border-color: #27ae60; color: #0a2e1a; font-weight: 800;
   }
+  .alternativa.sel-verde span { color: white; font-weight: 700; }
 
   @keyframes pulse-verde {
     0%,100% { box-shadow: 0 0 0 3px rgba(46,204,113,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
-    50%      { box-shadow: 0 0 0 6px rgba(46,204,113,0.15), inset 0 1px 0 rgba(255,255,255,0.15); }
+    50%      { box-shadow: 0 0 0 7px rgba(46,204,113,0.12), inset 0 1px 0 rgba(255,255,255,0.15); }
   }
 
   .discursiva-area { padding: 8px 22px 18px; }
@@ -566,9 +567,24 @@
   function selecionarAlternativa(el, qNum) {
     if (submetido) return;
     const qs = el.closest('.questao');
-    qs.querySelectorAll('.alternativa').forEach(a => a.classList.remove('selecionada'));
+    const jaSelecionada = el.classList.contains('selecionada');
+
+    // Remove seleção de todas as alternativas da questão
+    qs.querySelectorAll('.alternativa').forEach(a => {
+      a.classList.remove('selecionada', 'sel-azul', 'sel-verde');
+    });
+
     el.classList.add('selecionada');
     el.querySelector('input[type=radio]').checked = true;
+
+    if (jaSelecionada) {
+      const eraAzul = el.dataset.cor !== 'verde';
+      el.dataset.cor = eraAzul ? 'verde' : 'azul';
+    } else {
+      el.dataset.cor = 'azul';
+    }
+
+    el.classList.add(el.dataset.cor === 'verde' ? 'sel-verde' : 'sel-azul');
     atualizarProgresso();
   }
 
