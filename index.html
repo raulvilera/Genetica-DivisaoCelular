@@ -214,14 +214,40 @@
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: .9rem; background: white; color: #1a4b6e; transition: 0.15s;
   }
+  /* Alternativa selecionada – azul (padrão / questões ímpares: 1, 5, 9) */
   .alternativa.selecionada {
-    background: #0a3352 !important; border-color: #c9a03d !important;
+    background: linear-gradient(120deg, #0a3352, #1a5276) !important;
+    border-color: #3fc3e0 !important;
     color: white !important; font-weight: 700 !important;
+    box-shadow: 0 0 0 3px rgba(63,195,224,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+    animation: pulse-azul 1.6s ease-in-out infinite;
   }
   .alternativa.selecionada .letra {
-    background: #ffdd99; border-color: #c9a03d; color: #0a2e44; font-weight: 800;
+    background: #3fc3e0; border-color: #3fc3e0; color: #0a2e44; font-weight: 800;
   }
   .alternativa.selecionada span { color: white; font-weight: 700; }
+
+  @keyframes pulse-azul {
+    0%,100% { box-shadow: 0 0 0 3px rgba(63,195,224,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
+    50%      { box-shadow: 0 0 0 6px rgba(63,195,224,0.15), inset 0 1px 0 rgba(255,255,255,0.15); }
+  }
+
+  /* Alternativa selecionada – verde (questões 3 e 7) */
+  .questao-verde .alternativa.selecionada {
+    background: linear-gradient(120deg, #0a3d2a, #1a6644) !important;
+    border-color: #2ecc71 !important;
+    color: white !important; font-weight: 700 !important;
+    box-shadow: 0 0 0 3px rgba(46,204,113,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+    animation: pulse-verde 1.6s ease-in-out infinite;
+  }
+  .questao-verde .alternativa.selecionada .letra {
+    background: #2ecc71; border-color: #27ae60; color: #0a2e1a; font-weight: 800;
+  }
+
+  @keyframes pulse-verde {
+    0%,100% { box-shadow: 0 0 0 3px rgba(46,204,113,0.35), inset 0 1px 0 rgba(255,255,255,0.15); }
+    50%      { box-shadow: 0 0 0 6px rgba(46,204,113,0.15), inset 0 1px 0 rgba(255,255,255,0.15); }
+  }
 
   .discursiva-area { padding: 8px 22px 18px; }
   textarea {
@@ -347,7 +373,7 @@
     </div>
 
     <!-- QUESTÃO 3 -->
-    <div class="questao" data-q="3" data-tipo="me" data-gabarito="C">
+    <div class="questao questao-verde" data-q="3" data-tipo="me" data-gabarito="C">
       <div class="questao-header"><div class="num">3</div><span class="questao-tipo">Múltipla Escolha</span></div>
       <div class="questao-enunciado"><strong>Bases nitrogenadas:</strong> Se uma fita de DNA apresenta A-T-C-G-A, qual a sequência complementar?</div>
       <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/KlACXetYPZmFRlxt.png" class="questao-imagem" onerror="this.style.display='none'">
@@ -389,7 +415,7 @@
     </div>
 
     <!-- QUESTÃO 7 -->
-    <div class="questao" data-q="7" data-tipo="me" data-gabarito="D">
+    <div class="questao questao-verde" data-q="7" data-tipo="me" data-gabarito="D">
       <div class="questao-header"><div class="num">7</div><span class="questao-tipo">Múltipla Escolha</span></div>
       <div class="questao-enunciado"><strong>Cariótipo humano:</strong> Sobre o cariótipo humano normal, assinale a alternativa correta:</div>
       <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663081063064/kDMbyOiGkttruoTm.png" class="questao-imagem" onerror="this.style.display='none'">
